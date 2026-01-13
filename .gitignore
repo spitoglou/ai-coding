@@ -1,0 +1,5 @@
+.claude/commands/openspec
+.claude/reports/*
+openspec
+AGENTS.md
+!.claude/reports/_registry-template.md
