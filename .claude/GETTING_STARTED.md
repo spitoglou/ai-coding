@@ -72,6 +72,24 @@ When making significant changes:
 4. **After approval**: `/openspec:apply`
 5. **After deployment**: `/openspec:archive`
 
+## Core vs. Project Specifics
+
+The toolkit is a **generic core** you never hand-edit, plus **one file** that
+holds everything specific to your project. This lets you update the core in
+place without losing your adaptations.
+
+| Layer | Files | On update (`install.sh`) |
+|-------|-------|--------------------------|
+| **Core** (toolkit-owned) | `agents/`, `commands/`, `skills/`, `hooks/`, scripts, `settings.json`, `VERSION` | Overwritten |
+| **Specifics** (yours) | `.claude/project.md` | Preserved |
+| **Runtime** (generated) | `reports/*`, `settings.local.json` | Preserved |
+| **Your additions** | any file you add (e.g. `commands/my-cmd.md`) | Kept (never deleted) |
+
+`.claude/project.md` is where the project's toolchain, architecture,
+conventions, and domain live. Core files **reference** it instead of hard-coding
+details, so an agent reads project specifics from there. See *Adapting to Your
+Project* below.
+
 ## Installing into Your Project
 
 This toolkit is designed to be ported into other projects. Two ways:
@@ -79,24 +97,47 @@ This toolkit is designed to be ported into other projects. Two ways:
 **From this repo, into a target project:**
 
 ```bash
-./install.sh /path/to/your-project
+./install.sh /path/to/your-project        # install or update the core
+./install.sh --check /path/to/your-project  # preview what an update would change
 ```
 
-This copies `.claude/` into the target and bootstraps its runtime state.
-Re-run any time to pull toolkit updates — your local reports and registries
-(`_registry.md`, `_tech-debt.md`) are never overwritten.
+This copies the core into the target, bootstraps runtime state, and adapts to
+the project (see below). Re-run any time to pull core updates — your
+`project.md`, reports, registries, and any files you added are never
+overwritten. `--check` shows a file-level preview first: `~` overwritten,
+`+` added, `=` your file left untouched.
 
-**Manual copy:** copy `.claude/` into your project, then bootstrap the runtime
-registries and report directories:
+**Manual copy:** copy `.claude/` into your project, then bootstrap:
 
 ```bash
 bash .claude/skills/agent-coordination/scripts/bootstrap.sh
 ```
 
-Bootstrap is idempotent — it seeds `_registry.md` and `_tech-debt.md` from
-their templates (leaving existing ones untouched) and creates the report
-category directories the commands expect. The installed toolkit version is
-recorded in `.claude/VERSION`.
+Bootstrap is idempotent — it seeds `_registry.md`/`_tech-debt.md` from their
+templates, creates the report category directories, and runs `adapt.sh`. The
+installed core version is recorded in `.claude/VERSION`.
+
+## Adapting to Your Project
+
+Two passes keep `.claude/project.md` current:
+
+1. **Deterministic** — `adapt.sh` detects the toolchain (test/lint/type-check/
+   build commands, package manager, project name) and (re)writes the managed
+   `CORE:AUTODETECT` block. It runs automatically during bootstrap and every
+   session, and is safe to run by hand:
+
+   ```bash
+   bash .claude/skills/agent-coordination/scripts/adapt.sh
+   ```
+
+2. **Judgement-based** — the `/adapt` command has an agent read the repo and
+   fill in the free-form **Project-specific notes** (architecture, conventions,
+   domain). Run it once after install, and again (`/adapt --refresh`) when the
+   project changes.
+
+Only the managed block is regenerated; your notes below it are always preserved.
+If an auto-detected command is wrong, record the correct one under *Toolchain
+overrides* in `project.md` — it takes precedence.
 
 ## Self-Healing (SessionStart Hook)
 

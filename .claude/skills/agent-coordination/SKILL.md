@@ -10,6 +10,15 @@ allowed-tools: Read, Write, Edit, Grep, Glob, Bash, TodoWrite
 
 **Build on existing work. Never recreate.**
 
+## Project Specifics Live in One File
+
+This toolkit is a **generic core**. All project-specific facts (toolchain,
+commands, architecture, conventions, domain) live in **`.claude/project.md`** —
+read it first, and prefer its commands (especially any under *Toolchain
+overrides*) over guessing. Never encode project details into core files
+(`agents/`, `commands/`, `skills/`, scripts); those are overwritten on update.
+Run `/adapt` (or `adapt.sh`) to (re)generate `project.md`.
+
 ---
 
 ## Two Registries
@@ -34,6 +43,9 @@ The system maintains two distinct registries:
 Before invoking any agent, check what already exists:
 
 ```bash
+# Read project specifics first (toolchain, conventions, domain)
+cat .claude/project.md 2>/dev/null | head -60
+
 # Check registry for recent reports
 cat .claude/reports/_registry.md | head -50
 

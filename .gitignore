@@ -1,5 +1,6 @@
 .claude/commands/openspec
 .claude/settings.local.json
+.claude/project.md
 
 # Python
 __pycache__/

@@ -9,7 +9,9 @@ tags: [agents, ci, pipeline, quality]
 Run a comprehensive local CI pipeline to verify code quality before commits or OpenSpec archiving.
 
 **Project Detection**
-Detect project type and run appropriate tools:
+First read `.claude/project.md` — if it defines Test/Lint/Type-check/Build
+commands (auto-detected block or *Toolchain overrides*), use those verbatim.
+Fall back to detecting project type and running the defaults below:
 
 | Config File | Project Type | Lint | Type Check | Test |
 |-------------|--------------|------|------------|------|

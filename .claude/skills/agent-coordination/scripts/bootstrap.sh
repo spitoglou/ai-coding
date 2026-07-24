@@ -45,4 +45,11 @@ for cat in "${CATEGORIES[@]}"; do
 done
 echo "✅ Ensured ${#CATEGORIES[@]} report category directories"
 
+# Adapt the generic core to this project (seeds project.md, refreshes the
+# auto-detected toolchain block). Non-fatal: never block bootstrap.
+ADAPT=".claude/skills/agent-coordination/scripts/adapt.sh"
+if [ -f "$ADAPT" ]; then
+    bash "$ADAPT" || echo "⚠️  adapt.sh failed, skipped" >&2
+fi
+
 echo "Bootstrap complete."

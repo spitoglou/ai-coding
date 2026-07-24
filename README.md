@@ -13,12 +13,15 @@ Reusable Claude Code infrastructure with agent coordination, design system, and 
 
 ```
 .claude/
-├── agents/          # 15 specialized agent definitions
-├── commands/        # Slash commands for common workflows
-├── skills/          # Reusable skill packages
-└── reports/         # Generated reports and registries
+├── agents/               # 15 specialized agent definitions   ┐
+├── commands/             # Slash commands for common workflows │ generic core
+├── skills/               # Reusable skill packages             │ (updated in place)
+├── hooks/                # SessionStart self-heal hook         ┘
+├── project-template.md   # Template for the project profile (core)
+├── project.md            # YOUR project specifics (preserved on update)
+└── reports/              # Generated reports and registries (preserved)
 
-openspec/            # Spec-driven development (generated per-project, not committed)
+openspec/                 # Spec-driven development (generated per-project, not committed)
 ```
 
 > **Note on OpenSpec:** the `openspec/` directory (and its `AGENTS.md`) is
@@ -37,6 +40,7 @@ openspec/            # Spec-driven development (generated per-project, not commi
 
 | Command | Purpose |
 |---------|---------|
+| `/adapt` | Adapt the core to this project (`project.md`) |
 | `/agents:review [path]` | Code review |
 | `/agents:security [path]` | Security scan |
 | `/agents:coverage` | Test coverage analysis |
@@ -64,17 +68,20 @@ Commands auto-detect project type from config files:
 
 ## Usage
 
-Install into a target project (copies `.claude/` and bootstraps runtime state):
+Install into a target project (copies the core, bootstraps runtime state, and
+adapts to the project):
 
 ```bash
-./install.sh /path/to/your-project
+./install.sh /path/to/your-project          # install or update
+./install.sh --check /path/to/your-project  # preview an update, change nothing
 ```
 
-Re-run any time to pull updates — local reports and registries are preserved.
-Or copy `.claude/` in manually and run
-`bash .claude/skills/agent-coordination/scripts/bootstrap.sh`. The
-infrastructure adapts to your project's toolchain automatically. See
-[Getting Started](.claude/GETTING_STARTED.md) for details.
+The toolkit is a **generic core** plus one project-specific file,
+`.claude/project.md`. Re-run `install.sh` any time to pull core updates — your
+`project.md`, reports, registries, and any files you added are never
+overwritten. Run `/adapt` (or `adapt.sh`) to (re)generate `project.md` for your
+project's toolchain and conventions. See
+[Getting Started](.claude/GETTING_STARTED.md) for the full model.
 
 ## Documentation
 
