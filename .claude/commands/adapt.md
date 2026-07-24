@@ -19,7 +19,7 @@ be updated in place.
 2. Free-form **Project-specific notes** — architecture, conventions, domain.
    Yours to own; preserved across reruns and core updates.
 
-This command refreshes (1) via `adapt.sh`, then fills in (2) from what it learns
+This command refreshes (1) via `adapt.py`, then fills in (2) from what it learns
 about the repo. Safe to rerun any time — it updates the notes in place rather
 than duplicating them.
 
@@ -28,7 +28,7 @@ than duplicating them.
 1. **Run the deterministic pass** (seeds `project.md`, refreshes the toolchain block):
 
    ```bash
-   bash .claude/skills/agent-coordination/scripts/adapt.sh
+   python3 .claude/skills/agent-coordination/scripts/adapt.py
    ```
 
 2. **Read the project** to learn its specifics. Look at, as available:

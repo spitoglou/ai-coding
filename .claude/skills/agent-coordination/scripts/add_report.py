@@ -139,7 +139,7 @@ def main(argv: list[str] | None = None) -> int:
     reports_dir = Path(args.reports_dir)
     registry = reports_dir / "_registry.md"
     if not registry.exists():
-        print(f"❌ Registry not found: {registry} (run bootstrap.sh first)", file=sys.stderr)
+        print(f"❌ Registry not found: {registry} (run bootstrap.py first)", file=sys.stderr)
         return 1
 
     lines = registry.read_text().splitlines(keepends=True)

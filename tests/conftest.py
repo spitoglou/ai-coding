@@ -22,7 +22,7 @@ def project(tmp_path: Path) -> Path:
     """A bootstrapped project copy: tmp_path/.claude with seeded registries."""
     shutil.copytree(CLAUDE_SRC, tmp_path / ".claude")
     subprocess.run(
-        ["bash", f"{SCRIPTS_REL}/bootstrap.sh"],
+        [sys.executable, f"{SCRIPTS_REL}/bootstrap.py"],
         cwd=tmp_path,
         check=True,
         capture_output=True,

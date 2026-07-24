@@ -17,7 +17,7 @@ commands, architecture, conventions, domain) live in **`.claude/project.md`** �
 read it first, and prefer its commands (especially any under *Toolchain
 overrides*) over guessing. Never encode project details into core files
 (`agents/`, `commands/`, `skills/`, scripts); those are overwritten on update.
-Run `/adapt` (or `adapt.sh`) to (re)generate `project.md`.
+Run `/adapt` (or `adapt.py`) to (re)generate `project.md`.
 
 ---
 
@@ -312,7 +312,7 @@ skills/agent-coordination/
 ├── templates.md          # Report templates
 ├── reference.md          # Verification details, retry logic
 └── scripts/
-    ├── verify.sh         # Deliverable verification
+    ├── verify.py         # Deliverable verification
     └── archive_reports.py # Registry archiving (dated snapshots)
 ```
 

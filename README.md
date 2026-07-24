@@ -72,14 +72,14 @@ Install into a target project (copies the core, bootstraps runtime state, and
 adapts to the project):
 
 ```bash
-./install.sh /path/to/your-project          # install or update
-./install.sh --check /path/to/your-project  # preview an update, change nothing
+python3 install.py /path/to/your-project          # install or update
+python3 install.py --check /path/to/your-project  # preview an update, change nothing
 ```
 
 The toolkit is a **generic core** plus one project-specific file,
-`.claude/project.md`. Re-run `install.sh` any time to pull core updates — your
+`.claude/project.md`. Re-run `install.py` any time to pull core updates — your
 `project.md`, reports, registries, and any files you added are never
-overwritten. Run `/adapt` (or `adapt.sh`) to (re)generate `project.md` for your
+overwritten. Run `/adapt` (or `adapt.py`) to (re)generate `project.md` for your
 project's toolchain and conventions. See
 [Getting Started](.claude/GETTING_STARTED.md) for the full model.
 

@@ -5,13 +5,13 @@
 > across core updates.
 >
 > - The block between the `CORE:AUTODETECT` markers is **auto-generated** by
->   `adapt.sh` / `/adapt`. Do not edit it by hand — it is regenerated on every
+>   `adapt.py` / `/adapt`. Do not edit it by hand — it is regenerated on every
 >   run.
 > - Everything under **Project-specific notes** is yours. It is never
->   regenerated and never overwritten by `install.sh`.
+>   regenerated and never overwritten by `install.py`.
 
 <!-- CORE:AUTODETECT:START -->
-<!-- Populated by adapt.sh — run: bash .claude/skills/agent-coordination/scripts/adapt.sh -->
+<!-- Populated by adapt.py — run: python3 .claude/skills/agent-coordination/scripts/adapt.py -->
 <!-- CORE:AUTODETECT:END -->
 
 ## Project-specific notes

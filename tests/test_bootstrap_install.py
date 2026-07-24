@@ -1,6 +1,7 @@
-"""Tests for bootstrap.sh and install.sh (idempotency + non-destructiveness)."""
+"""Tests for bootstrap.py and install.py (idempotency + non-destructiveness)."""
 
 import subprocess
+import sys
 from pathlib import Path
 
 from conftest import REPO_ROOT, SCRIPTS_REL
@@ -18,7 +19,7 @@ def test_bootstrap_is_non_destructive(project: Path):
     reg = project / ".claude/reports/_registry.md"
     reg.write_text(reg.read_text() + "\nSENTINEL_LOCAL\n")
     subprocess.run(
-        ["bash", f"{SCRIPTS_REL}/bootstrap.sh"],
+        [sys.executable, f"{SCRIPTS_REL}/bootstrap.py"],
         cwd=project, check=True, capture_output=True, text=True,
     )
     assert "SENTINEL_LOCAL" in reg.read_text()
@@ -30,7 +31,7 @@ def test_install_preserves_local_reports(tmp_path: Path):
 
     def install():
         return subprocess.run(
-            ["bash", "install.sh", str(target)],
+            [sys.executable, "install.py", str(target)],
             cwd=REPO_ROOT, capture_output=True, text=True,
         )
 
@@ -58,7 +59,7 @@ def test_install_preserves_local_reports(tmp_path: Path):
     assert "ADAPTATION_KEEPME" in profile.read_text()
     # Shared config ships; session-local permissions never leak into targets.
     assert (target / ".claude/settings.json").exists()
-    assert (target / ".claude/hooks/session-start.sh").exists()
+    assert (target / ".claude/hooks/session_start.py").exists()
     assert not (target / ".claude/settings.local.json").exists()
     # The core ships the template, not the source project's own project.md.
     assert (target / ".claude/project-template.md").exists()
@@ -67,10 +68,10 @@ def test_install_preserves_local_reports(tmp_path: Path):
 def test_install_check_is_read_only(tmp_path: Path):
     target = tmp_path / "app"
     (target / ".claude").mkdir(parents=True)
-    subprocess.run(["bash", "install.sh", str(target)],
+    subprocess.run([sys.executable, "install.py", str(target)],
                    cwd=REPO_ROOT, capture_output=True, text=True, check=True)
     before = (target / ".claude/project.md").read_text()
-    r = subprocess.run(["bash", "install.sh", "--check", str(target)],
+    r = subprocess.run([sys.executable, "install.py", "--check", str(target)],
                        cwd=REPO_ROOT, capture_output=True, text=True)
     assert r.returncode == 0, r.stderr
     # Up-to-date core reports no changes and touches nothing.

@@ -78,7 +78,7 @@ The toolkit is a **generic core** you never hand-edit, plus **one file** that
 holds everything specific to your project. This lets you update the core in
 place without losing your adaptations.
 
-| Layer | Files | On update (`install.sh`) |
+| Layer | Files | On update (`install.py`) |
 |-------|-------|--------------------------|
 | **Core** (toolkit-owned) | `agents/`, `commands/`, `skills/`, `hooks/`, scripts, `settings.json`, `VERSION` | Overwritten |
 | **Specifics** (yours) | `.claude/project.md` | Preserved |
@@ -97,8 +97,8 @@ This toolkit is designed to be ported into other projects. Two ways:
 **From this repo, into a target project:**
 
 ```bash
-./install.sh /path/to/your-project        # install or update the core
-./install.sh --check /path/to/your-project  # preview what an update would change
+python3 install.py /path/to/your-project        # install or update the core
+python3 install.py --check /path/to/your-project  # preview what an update would change
 ```
 
 This copies the core into the target, bootstraps runtime state, and adapts to
@@ -110,24 +110,24 @@ overwritten. `--check` shows a file-level preview first: `~` overwritten,
 **Manual copy:** copy `.claude/` into your project, then bootstrap:
 
 ```bash
-bash .claude/skills/agent-coordination/scripts/bootstrap.sh
+python3 .claude/skills/agent-coordination/scripts/bootstrap.py
 ```
 
 Bootstrap is idempotent — it seeds `_registry.md`/`_tech-debt.md` from their
-templates, creates the report category directories, and runs `adapt.sh`. The
+templates, creates the report category directories, and runs `adapt.py`. The
 installed core version is recorded in `.claude/VERSION`.
 
 ## Adapting to Your Project
 
 Two passes keep `.claude/project.md` current:
 
-1. **Deterministic** — `adapt.sh` detects the toolchain (test/lint/type-check/
+1. **Deterministic** — `adapt.py` detects the toolchain (test/lint/type-check/
    build commands, package manager, project name) and (re)writes the managed
    `CORE:AUTODETECT` block. It runs automatically during bootstrap and every
    session, and is safe to run by hand:
 
    ```bash
-   bash .claude/skills/agent-coordination/scripts/adapt.sh
+   python3 .claude/skills/agent-coordination/scripts/adapt.py
    ```
 
 2. **Judgement-based** — the `/adapt` command has an agent read the repo and
@@ -142,11 +142,16 @@ overrides* in `project.md` — it takes precedence.
 ## Self-Healing (SessionStart Hook)
 
 `.claude/settings.json` registers a `SessionStart` hook
-(`.claude/hooks/session-start.sh`) that runs `bootstrap.sh` at the start of
+(`.claude/hooks/session_start.py`) that runs `bootstrap.py` at the start of
 every Claude Code session. This keeps the runtime state (registries, report
 directories) present even if `reports/` was cleaned or the toolkit was just
 ported in — no manual bootstrap needed. It's idempotent and never blocks the
 session. To disable, remove the `SessionStart` entry from `.claude/settings.json`.
+
+All infrastructure scripts are Python (cross-platform: Linux, macOS, Windows) —
+there are no shell scripts to maintain. The hook invokes `python3`; on a native
+Windows shell where the interpreter is `python`, change the one command in
+`settings.json` accordingly (Git Bash / WSL already provide `python3`).
 
 ## Registry Workflow
 

@@ -1,16 +1,17 @@
-"""Tests for adapt.sh: toolchain detection + managed-block preservation."""
+"""Tests for adapt.py: toolchain detection + managed-block preservation."""
 
+import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 from conftest import CLAUDE_SRC
 
-ADAPT_REL = ".claude/skills/agent-coordination/scripts/adapt.sh"
+ADAPT_REL = ".claude/skills/agent-coordination/scripts/adapt.py"
 
 
 def make_project(tmp_path: Path) -> Path:
     """A project copy with the core but no project.md yet."""
-    import shutil
     shutil.copytree(CLAUDE_SRC, tmp_path / ".claude")
     (tmp_path / ".claude/project.md").unlink(missing_ok=True)
     return tmp_path
@@ -18,7 +19,7 @@ def make_project(tmp_path: Path) -> Path:
 
 def run_adapt(project: Path):
     return subprocess.run(
-        ["bash", ADAPT_REL], cwd=project, capture_output=True, text=True
+        [sys.executable, ADAPT_REL], cwd=project, capture_output=True, text=True
     )
 
 
