@@ -52,11 +52,20 @@ Detect project type and run appropriate tools:
    npm audit --audit-level=moderate 2>/dev/null || true
    ```
 
+   **Toolkit integrity (all project types):**
+   ```bash
+   echo "=== Step 5/5: Registry integrity ==="
+   # Validate the report registry format (no-op-safe if reports/ is empty)
+   python3 .claude/skills/agent-coordination/scripts/validate_registry.py \
+       2>/dev/null || echo "registry validation skipped (no registry yet)"
+   ```
+
 3. Report results summary:
    - Lint: Pass/Fail with error count
    - Types: Pass/Fail with error count
    - Tests: Pass/Fail with test count
    - Security: Any obvious issues
+   - Registry: Valid/Invalid (format, dates, links)
 
 4. If all pass, output success message.
 5. If failures, provide specific remediation steps.

@@ -1,4 +1,11 @@
 .claude/commands/openspec
+.claude/settings.local.json
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
 .claude/reports/*
 openspec
 AGENTS.md

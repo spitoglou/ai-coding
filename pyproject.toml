@@ -16,7 +16,11 @@ packages = ["src/ai_coding"]
 [tool.uv]
 dev-dependencies = [
     "commitizen>=4.11.2",
+    "pytest>=8.0.0",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
 
 [tool.commitizen]
 name = "cz_conventional_commits"

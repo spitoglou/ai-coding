@@ -36,6 +36,7 @@ mkdir -p "$TARGET/.claude/reports"
 if command -v rsync >/dev/null 2>&1; then
     # Include rules must precede the catch-all exclude (first match wins).
     rsync -a \
+        --exclude 'settings.local.json' \
         --include 'reports/' \
         --include 'reports/_registry-template.md' \
         --include 'reports/_tech-debt-template.md' \
@@ -46,7 +47,9 @@ else
     # wholesale, then copy only the report templates. The target's runtime
     # reports are never touched.
     for item in "$SRC_DIR/.claude/"*; do
-        [ "$(basename "$item")" = "reports" ] && continue
+        name="$(basename "$item")"
+        [ "$name" = "reports" ] && continue
+        [ "$name" = "settings.local.json" ] && continue
         cp -R "$item" "$TARGET/.claude/"
     done
     for tmpl in _registry-template.md _tech-debt-template.md; do

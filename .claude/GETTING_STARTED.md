@@ -98,6 +98,31 @@ their templates (leaving existing ones untouched) and creates the report
 category directories the commands expect. The installed toolkit version is
 recorded in `.claude/VERSION`.
 
+## Self-Healing (SessionStart Hook)
+
+`.claude/settings.json` registers a `SessionStart` hook
+(`.claude/hooks/session-start.sh`) that runs `bootstrap.sh` at the start of
+every Claude Code session. This keeps the runtime state (registries, report
+directories) present even if `reports/` was cleaned or the toolkit was just
+ported in — no manual bootstrap needed. It's idempotent and never blocks the
+session. To disable, remove the `SessionStart` entry from `.claude/settings.json`.
+
+## Registry Workflow
+
+Report entries are managed with helper scripts so the registry stays in the one
+format the tooling expects (avoid hand-editing `_registry.md`):
+
+```bash
+SC=.claude/skills/agent-coordination/scripts
+
+# Record a completed report (--name is the stem WITHOUT the date)
+uv run $SC/add_report.py --category review --name review-src \
+    --status Completed --summary "Peer review of src/" --scaffold
+
+# Lint the registry (run by /agents:ci): bad rows, dates, links, missing files
+uv run $SC/validate_registry.py
+```
+
 ## Customization
 
 - **Agent model:** each agent pins a default model in its frontmatter
