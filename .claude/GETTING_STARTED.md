@@ -29,6 +29,11 @@ Located in `openspec/`, enables spec-driven development:
 - **Changes** - Propose what SHOULD change (`openspec/changes/`)
 - **Workflow** - Proposal → Implementation → Archive
 
+> **Note:** `openspec/` is **not committed** with this toolkit — it's
+> git-ignored and generated per-project. If it's missing, initialize it in your
+> project root with `npx openspec init` (or `openspec init`). Until then, the
+> OpenSpec commands and the `openspec/AGENTS.md` references below are inactive.
+
 ## Your First Workflow: Code Review
 
 Run a code review using the code-quality agent:

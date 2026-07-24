@@ -7,7 +7,7 @@ Reusable Claude Code infrastructure with agent coordination, design system, and 
 - [Getting Started](.claude/GETTING_STARTED.md)
 - [Agent Coordination](.claude/skills/agent-coordination/SKILL.md)
 - [Design System](.claude/skills/design/SKILL.md)
-- [OpenSpec Guide](openspec/AGENTS.md)
+- OpenSpec Guide — `openspec/AGENTS.md` (generated locally, see note below)
 
 ## Structure
 
@@ -18,8 +18,20 @@ Reusable Claude Code infrastructure with agent coordination, design system, and 
 ├── skills/          # Reusable skill packages
 └── reports/         # Generated reports and registries
 
-openspec/            # Spec-driven development
+openspec/            # Spec-driven development (generated per-project, not committed)
 ```
+
+> **Note on OpenSpec:** the `openspec/` directory (and its `AGENTS.md`) is
+> **not committed** — it's intentionally git-ignored and generated per-project
+> by the [OpenSpec CLI](https://github.com/Fission-AI/OpenSpec). If it's absent
+> after porting this toolkit in, initialize it in your project root:
+>
+> ```bash
+> npx openspec init   # or: openspec init
+> ```
+>
+> The OpenSpec references throughout these docs and `CLAUDE.md` activate once
+> that directory exists.
 
 ## Key Commands
 
