@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # /// script
-# requires-python = ">=3.10"
+# requires-python = ">=3.13"
 # dependencies = []
 # ///
 """Bootstrap the agent-coordination runtime state in a project.

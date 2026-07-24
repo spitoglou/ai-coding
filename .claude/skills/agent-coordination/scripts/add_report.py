@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # /// script
-# requires-python = ">=3.10"
+# requires-python = ">=3.13"
 # dependencies = []
 # ///
 """Append a report entry to the registry (and optionally scaffold the file).

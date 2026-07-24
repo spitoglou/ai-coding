@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # /// script
-# requires-python = ">=3.10"
+# requires-python = ">=3.13"
 # dependencies = []
 # ///
 """Adapt the toolkit's generic core to this project (deterministic pass).
