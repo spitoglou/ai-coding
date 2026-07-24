@@ -38,7 +38,8 @@ Before invoking any agent, check what already exists:
 cat .claude/reports/_registry.md | head -50
 
 # Check if archiving needed (>50 entries)
-ENTRIES=$(grep -c "^- .*|.*|" .claude/reports/_registry.md 2>/dev/null || echo 0)
+# Report rows are markdown-link table rows, e.g. "| [name](cat/name) | date | ... |"
+ENTRIES=$(grep -c "^| \[" .claude/reports/_registry.md 2>/dev/null || echo 0)
 [ "$ENTRIES" -gt 50 ] && echo "⚠️ Registry has $ENTRIES entries - suggest /archive"
 
 # Check relevant tech debt (if working on that area)
@@ -64,7 +65,7 @@ Requirements:
 - [Specific deliverables]
 
 Output location:
-- Report: .claude/reports/[category]/[name]-YYYYMMDD.md
+- Report: .claude/reports/[category]/[name]-YYYY-MM-DD.md
 ")
 ```
 
@@ -115,7 +116,7 @@ Requirements:
 - [Specific deliverables]
 
 Output location:
-- Report: .claude/reports/[category]/[name]-YYYYMMDD.md
+- Report: .claude/reports/[category]/[name]-YYYY-MM-DD.md
 ")
 ```
 
@@ -160,7 +161,7 @@ All reports go to `.claude/reports/[category]/`:
 | ci | `ci/` | CI pipeline results | (bash/devops) |
 | archive | `archive/` | Old reports (moved, not deleted) | (archive script) |
 
-**Naming convention:** `[category]-[topic]-YYYYMMDD.md`
+**Naming convention:** `[category]-[topic]-YYYY-MM-DD.md`
 
 ---
 

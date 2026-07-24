@@ -83,4 +83,4 @@ Detect project type and run appropriate tools:
 **Integration**
 - Use before `openspec archive` to ensure quality gate passes
 - Use before committing significant changes
-- Results can be saved to `.claude/reports/ci/ci-YYYYMMDD-HHMM.md` if needed
+- Results can be saved to `.claude/reports/ci/ci-YYYY-MM-DD-HHMM.md` if needed

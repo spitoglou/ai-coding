@@ -57,7 +57,7 @@ Generate blameless postmortem:
    - What went wrong
    - What we'll do differently
 
-Output: .claude/reports/sre/postmortem-[incident-slug]-YYYYMMDD.md
+Output: .claude/reports/sre/postmortem-[incident-slug]-YYYY-MM-DD.md
 
 After generating postmortem:
 - Add P0/P1 action items to .claude/reports/_tech-debt.md as Critical/High priority
@@ -87,7 +87,7 @@ Extract from logs:
 
 Reconstruct incident narrative and generate postmortem.
 
-Output: .claude/reports/sre/postmortem-[extracted-title]-YYYYMMDD.md
+Output: .claude/reports/sre/postmortem-[extracted-title]-YYYY-MM-DD.md
 ")
 ```
 

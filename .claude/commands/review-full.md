@@ -63,7 +63,7 @@ Severity classification:
 - NON-BLOCKING: Should fix, can defer
 - NIT: Nice to have improvements
 
-Output: .claude/reports/review/L1-peer-YYYYMMDD.md
+Output: .claude/reports/review/L1-peer-YYYY-MM-DD.md
 ")
 ```
 
@@ -96,7 +96,7 @@ Assessment criteria:
 - API design quality and versioning
 - Scalability implications
 
-Output: .claude/reports/review/L2-arch-YYYYMMDD.md
+Output: .claude/reports/review/L2-arch-YYYY-MM-DD.md
 ")
 ```
 
@@ -131,7 +131,7 @@ Security checklist:
 - Data exposure risks
 - Dependency CVE check
 
-Output: .claude/reports/security/L3-security-YYYYMMDD.md
+Output: .claude/reports/security/L3-security-YYYY-MM-DD.md
 ")
 ```
 
@@ -165,7 +165,7 @@ Reliability assessment:
 - Graceful degradation capability
 - Rollback safety and procedures
 
-Output: .claude/reports/sre/L4-reliability-YYYYMMDD.md
+Output: .claude/reports/sre/L4-reliability-YYYY-MM-DD.md
 ")
 ```
 
@@ -204,7 +204,7 @@ uv run .claude/skills/agent-coordination/scripts/verify.py "[category]" "[name]"
    ```
    - [ ] **TD-NNN**: [Description]
      - **Impact:** [Critical|High|Medium|Low]
-     - **Source:** full-review-YYYYMMDD.md
+     - **Source:** full-review-YYYY-MM-DD.md
    ```
 
 ---
@@ -247,13 +247,13 @@ Items marked "won't fix now" → append to `.claude/reports/_tech-debt.md`
 - [ ] **CHANGES REQUESTED**: Blocking issues remain
 
 ## Report Links
-- L1: `.claude/reports/review/L1-peer-YYYYMMDD.md`
-- L2: `.claude/reports/review/L2-arch-YYYYMMDD.md`
-- L3: `.claude/reports/security/L3-security-YYYYMMDD.md`
-- L4: `.claude/reports/sre/L4-reliability-YYYYMMDD.md`
+- L1: `.claude/reports/review/L1-peer-YYYY-MM-DD.md`
+- L2: `.claude/reports/review/L2-arch-YYYY-MM-DD.md`
+- L3: `.claude/reports/security/L3-security-YYYY-MM-DD.md`
+- L4: `.claude/reports/sre/L4-reliability-YYYY-MM-DD.md`
 ```
 
-**Output:** `.claude/reports/review/full-review-YYYYMMDD.md`
+**Output:** `.claude/reports/review/full-review-YYYY-MM-DD.md`
 
 **Final step:** Add summary report to `_registry.md`.
 

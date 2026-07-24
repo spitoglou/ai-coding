@@ -210,7 +210,7 @@ mode: reliability-review | incident | capacity
 ## Output Location
 
 Reports go to: `.claude/reports/sre/`
-Naming: `sre-[type]-[service]-YYYYMMDD.md`
+Naming: `sre-[type]-[service]-YYYY-MM-DD.md`
 
 ## Key Principles
 

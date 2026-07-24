@@ -9,7 +9,6 @@ import re
 import shutil
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import List, Tuple
 
 
 def parse_date(date_str: str) -> datetime:
@@ -24,7 +23,9 @@ def is_older_than(date_str: str, days_threshold: int) -> bool:
     return entry_date < threshold_date
 
 
-def extract_report_info(line: str) -> Tuple[str, str, str, str]:
+def extract_report_info(
+    line: str,
+) -> tuple[str | None, str | None, str | None, str | None]:
     """Extract report filename, date, status, and category from registry line.
 
     Returns:
@@ -59,8 +60,8 @@ def archive_reports(days_threshold: int = 7, dry_run: bool = False) -> None:
     registry_file = reports_dir / "_registry.md"
     archive_dir = reports_dir / "archive"
 
-    # Create dated archive registry (e.g., _registry-archive-20251228.md)
-    archive_date = datetime.now().strftime("%Y%m%d")
+    # Create dated archive registry (e.g., _registry-archive-2025-12-28.md)
+    archive_date = datetime.now().strftime("%Y-%m-%d")
     archive_registry = archive_dir / f"_registry-archive-{archive_date}.md"
 
     if not registry_file.exists():

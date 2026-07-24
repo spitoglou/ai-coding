@@ -67,6 +67,40 @@ When making significant changes:
 4. **After approval**: `/openspec:apply`
 5. **After deployment**: `/openspec:archive`
 
+## Installing into Your Project
+
+This toolkit is designed to be ported into other projects. Two ways:
+
+**From this repo, into a target project:**
+
+```bash
+./install.sh /path/to/your-project
+```
+
+This copies `.claude/` into the target and bootstraps its runtime state.
+Re-run any time to pull toolkit updates — your local reports and registries
+(`_registry.md`, `_tech-debt.md`) are never overwritten.
+
+**Manual copy:** copy `.claude/` into your project, then bootstrap the runtime
+registries and report directories:
+
+```bash
+bash .claude/skills/agent-coordination/scripts/bootstrap.sh
+```
+
+Bootstrap is idempotent — it seeds `_registry.md` and `_tech-debt.md` from
+their templates (leaving existing ones untouched) and creates the report
+category directories the commands expect. The installed toolkit version is
+recorded in `.claude/VERSION`.
+
+## Customization
+
+- **Agent model:** each agent pins a default model in its frontmatter
+  (`model: sonnet` in `.claude/agents/*.md`). Change that field to point an
+  agent at a different model for your project.
+- **Report categories:** add directories under `.claude/reports/` and a
+  matching section in `_registry-template.md` to track new report types.
+
 ## Next Steps
 
 - Explore agent definitions in `.claude/agents/`

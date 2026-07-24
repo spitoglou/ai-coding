@@ -61,7 +61,7 @@ Provide technical review:
 5. Scalability concerns
 6. Specific change requests
 
-Output: .claude/reports/rfc/review-RFC-[NNNN]-YYYYMMDD.md
+Output: .claude/reports/rfc/review-RFC-[NNNN]-YYYY-MM-DD.md
 ")
 ```
 
@@ -88,7 +88,7 @@ Record:
 
 Update RFC status in original document.
 
-Output: .claude/reports/rfc/decision-RFC-[NNNN]-YYYYMMDD.md
+Output: .claude/reports/rfc/decision-RFC-[NNNN]-YYYY-MM-DD.md
 ")
 ```
 
@@ -149,8 +149,8 @@ done
 ## RFC Output Location
 
 - RFCs: `.claude/reports/rfc/RFC-NNNN-[slug].md`
-- Reviews: `.claude/reports/rfc/review-RFC-NNNN-YYYYMMDD.md`
-- Decisions: `.claude/reports/rfc/decision-RFC-NNNN-YYYYMMDD.md`
+- Reviews: `.claude/reports/rfc/review-RFC-NNNN-YYYY-MM-DD.md`
+- Decisions: `.claude/reports/rfc/decision-RFC-NNNN-YYYY-MM-DD.md`
 
 ## RFC Status Values
 

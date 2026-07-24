@@ -16,7 +16,7 @@ REGISTRY="$REPORTS_DIR/_registry.md"
 
 1. **Parse active registry** for entries older than threshold (default: 7 days)
 2. **Move report files** to `.claude/reports/archive/[category]/`
-3. **Create dated archive registry** `.claude/reports/archive/_registry-archive-YYYYMMDD.md`
+3. **Create dated archive registry** `.claude/reports/archive/_registry-archive-YYYY-MM-DD.md`
 4. **Update active registry** (remove archived entries)
 5. **Set status** of archived entries to "Archived" in dated registry
 6. **Report summary** with archive date and file count
@@ -32,7 +32,7 @@ REGISTRY="$REPORTS_DIR/_registry.md"
 
 ```
 .claude/reports/archive/
-├── _registry-archive-YYYYMMDD.md  # Dated archive registries (snapshots)
+├── _registry-archive-YYYY-MM-DD.md  # Dated archive registries (snapshots)
 ├── README.md                      # Archive index and documentation
 ├── analysis/                      # Old analysis reports
 ├── arch/                          # Old architecture reports
@@ -68,7 +68,7 @@ uv run .claude/skills/agent-coordination/scripts/archive_reports.py 7 --dry-run 
 
 ## Notes
 
-- **Dated snapshots:** Each archive run creates a new `_registry-archive-YYYYMMDD.md`
+- **Dated snapshots:** Each archive run creates a new `_registry-archive-YYYY-MM-DD.md`
 - **No appending:** Archive registries are never appended to - each is a snapshot in time
 - **Full automation:** Updates both active and archive registries automatically
 - **Archived reports** remain accessible in archive folder by category

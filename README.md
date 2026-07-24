@@ -52,7 +52,17 @@ Commands auto-detect project type from config files:
 
 ## Usage
 
-Copy the `.claude/` and `openspec/` directories into your project. The infrastructure will adapt to your project's toolchain automatically.
+Install into a target project (copies `.claude/` and bootstraps runtime state):
+
+```bash
+./install.sh /path/to/your-project
+```
+
+Re-run any time to pull updates — local reports and registries are preserved.
+Or copy `.claude/` in manually and run
+`bash .claude/skills/agent-coordination/scripts/bootstrap.sh`. The
+infrastructure adapts to your project's toolchain automatically. See
+[Getting Started](.claude/GETTING_STARTED.md) for details.
 
 ## Documentation
 

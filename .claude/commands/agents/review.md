@@ -22,7 +22,7 @@ Run a code review using the code-quality agent on specified files or directories
    - [Reference any relevant recent reports from registry]
    
    **Output:**
-   - Report: .claude/reports/review/review-[scope]-YYYYMMDD.md
+   - Report: .claude/reports/review/review-[scope]-YYYY-MM-DD.md
    
    **Mode:** review
    ")

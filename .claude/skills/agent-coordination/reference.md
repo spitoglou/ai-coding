@@ -24,12 +24,12 @@ uv run .claude/skills/agent-coordination/scripts/archive_reports.py 7 --dry-run
 **How it works:**
 1. Parses active registry entries (by date in registry, not filename)
 2. Moves files older than threshold to `.claude/reports/archive/[category]/`
-3. Creates dated archive registry: `_registry-archive-YYYYMMDD.md`
+3. Creates dated archive registry: `_registry-archive-YYYY-MM-DD.md`
 4. Updates active registry (removes archived entries)
 5. Changes status to "Archived" in archive registry
 
 **Output:**
-- Dated archive: `.claude/reports/archive/_registry-archive-YYYYMMDD.md`
+- Dated archive: `.claude/reports/archive/_registry-archive-YYYY-MM-DD.md`
 - Moved files: `.claude/reports/archive/[category]/[filename].md`
 - Updated active registry: `.claude/reports/_registry.md`
 

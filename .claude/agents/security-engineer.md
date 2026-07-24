@@ -140,7 +140,7 @@ mode: scan | threat-model | compliance
 ## Output Location
 
 Reports go to: `.claude/reports/security/`
-Naming: `security-[type]-[target]-YYYYMMDD.md`
+Naming: `security-[type]-[target]-YYYY-MM-DD.md`
 
 ## Key Principles
 

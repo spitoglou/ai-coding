@@ -29,7 +29,7 @@ Run a security vulnerability assessment using the security-engineer agent.
    - [Reference any relevant recent reports from registry]
    
    **Output:**
-   - Report: .claude/reports/security/security-scan-YYYYMMDD.md
+   - Report: .claude/reports/security/security-scan-YYYY-MM-DD.md
    
    **Mode:** scan
    ")

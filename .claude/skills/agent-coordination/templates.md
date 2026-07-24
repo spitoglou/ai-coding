@@ -138,7 +138,7 @@ Task(agent-name, "
 - path/to/file2
 
 **Expected output:**
-- Report: .claude/reports/[cat]/[name]-YYYYMMDD.md
+- Report: .claude/reports/[cat]/[name]-YYYY-MM-DD.md
 - Code: [path if applicable]
 - Success: [How to verify]
 
