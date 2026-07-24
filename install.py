@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.10"
+# dependencies = []
+# ///
 """Install / update the AI Coding infrastructure into a target project.
 
 Cross-platform replacement for install.sh. Copies the generic .claude/ core
@@ -10,8 +14,8 @@ adaptations:
     - settings.local.json  personal permissions (never copied out)
 
 Usage:
-    python install.py <target-project-dir>           install or update the core
-    python install.py --check <target-project-dir>   preview what would change
+    uv run --script install.py <target-project-dir>           install or update the core
+    uv run --script install.py --check <target-project-dir>   preview what would change
 
 Re-run any time to pull core updates; adaptations in project.md survive.
 """
@@ -105,7 +109,7 @@ def do_install(target_claude: Path) -> int:
 
     # Bootstrap runtime state + adapt (idempotent, non-destructive).
     subprocess.run(
-        [sys.executable, ".claude/skills/agent-coordination/scripts/bootstrap.py"],
+        ["uv", "run", "--script", ".claude/skills/agent-coordination/scripts/bootstrap.py"],
         cwd=target_claude.parent, check=True,
     )
     print(f"Done. Installed v{version} into {target_claude}/")

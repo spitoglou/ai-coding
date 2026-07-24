@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.10"
+# dependencies = []
+# ///
 """Append a report entry to the registry (and optionally scaffold the file).
 
 Keeps registry rows in the one canonical format the rest of the tooling
@@ -13,7 +17,7 @@ The row is inserted under the matching `### Category` heading inside the
 appended to form `{name}-{date}.md`.
 
 Usage:
-    python add_report.py --category review --name review-src \\
+    uv run --script add_report.py --category review --name review-src \\
         --status Completed --summary "Peer review of src/" [--date 2026-07-24] \\
         [--scaffold] [--reports-dir .claude/reports]
 """

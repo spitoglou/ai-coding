@@ -28,7 +28,7 @@ than duplicating them.
 1. **Run the deterministic pass** (seeds `project.md`, refreshes the toolchain block):
 
    ```bash
-   python3 .claude/skills/agent-coordination/scripts/adapt.py
+   uv run --script .claude/skills/agent-coordination/scripts/adapt.py
    ```
 
 2. **Read the project** to learn its specifics. Look at, as available:

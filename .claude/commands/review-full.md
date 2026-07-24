@@ -194,7 +194,7 @@ Each level MAY need prior level's output → Execute sequentially, verify betwee
 After each agent completes, run verification:
 
 ```bash
-uv run .claude/skills/agent-coordination/scripts/verify.py "[category]" "[name]" "[date]"
+uv run --script .claude/skills/agent-coordination/scripts/verify.py "[category]" "[name]" "[date]"
 ```
 
 ### Update Registries

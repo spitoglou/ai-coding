@@ -11,7 +11,7 @@
 >   regenerated and never overwritten by `install.py`.
 
 <!-- CORE:AUTODETECT:START -->
-<!-- Populated by adapt.py — run: python3 .claude/skills/agent-coordination/scripts/adapt.py -->
+<!-- Populated by adapt.py — run: uv run --script .claude/skills/agent-coordination/scripts/adapt.py -->
 <!-- CORE:AUTODETECT:END -->
 
 ## Project-specific notes

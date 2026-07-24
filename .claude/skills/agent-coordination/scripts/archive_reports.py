@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.10"
+# dependencies = []
+# ///
 """Archive old registry entries and reports.
 
 Moves registry entries and their associated report files older than N days

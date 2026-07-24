@@ -12,13 +12,13 @@ Load this file for detailed verification, archiving, retry logic, and edge cases
 # Script location: .claude/skills/agent-coordination/scripts/archive_reports.py
 
 # Basic archiving (default: 7 days)
-uv run .claude/skills/agent-coordination/scripts/archive_reports.py
+uv run --script .claude/skills/agent-coordination/scripts/archive_reports.py
 
 # Custom threshold (14 days)
-uv run .claude/skills/agent-coordination/scripts/archive_reports.py 14
+uv run --script .claude/skills/agent-coordination/scripts/archive_reports.py 14
 
 # Dry run (preview without moving)
-uv run .claude/skills/agent-coordination/scripts/archive_reports.py 7 --dry-run
+uv run --script .claude/skills/agent-coordination/scripts/archive_reports.py 7 --dry-run
 ```
 
 **How it works:**
@@ -48,10 +48,10 @@ uv run .claude/skills/agent-coordination/scripts/archive_reports.py 7 --dry-run
 # Script location: .claude/skills/agent-coordination/scripts/verify.py
 
 # Basic verification
-uv run .claude/skills/agent-coordination/scripts/verify.py "review" "code-security-audit" "2025-12-13" ""
+uv run --script .claude/skills/agent-coordination/scripts/verify.py "review" "code-security-audit" "2025-12-13" ""
 
 # With git path check
-uv run .claude/skills/agent-coordination/scripts/verify.py "impl" "auth-module" "2025-12-13" "lib/auth/"
+uv run --script .claude/skills/agent-coordination/scripts/verify.py "impl" "auth-module" "2025-12-13" "lib/auth/"
 ```
 
 ### Registry Helpers
@@ -64,12 +64,12 @@ SC=.claude/skills/agent-coordination/scripts
 
 # Append an entry (and scaffold the report file) in the canonical row format.
 # --name is the stem WITHOUT the date; the date is appended automatically.
-uv run $SC/add_report.py --category review --name review-src \
+uv run --script $SC/add_report.py --category review --name review-src \
     --status Completed --summary "Peer review of src/" --scaffold
 
 # Lint the registry: bad rows, dates, link/target mismatch, missing files
-uv run $SC/validate_registry.py            # exit 1 on errors
-uv run $SC/validate_registry.py --strict   # warnings (orphan files) also fail
+uv run --script $SC/validate_registry.py            # exit 1 on errors
+uv run --script $SC/validate_registry.py --strict   # warnings (orphan files) also fail
 ```
 
 ### Manual Verification (if script unavailable)

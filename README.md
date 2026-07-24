@@ -72,8 +72,8 @@ Install into a target project (copies the core, bootstraps runtime state, and
 adapts to the project):
 
 ```bash
-python3 install.py /path/to/your-project          # install or update
-python3 install.py --check /path/to/your-project  # preview an update, change nothing
+uv run --script install.py /path/to/your-project          # install or update
+uv run --script install.py --check /path/to/your-project  # preview an update, change nothing
 ```
 
 The toolkit is a **generic core** plus one project-specific file,

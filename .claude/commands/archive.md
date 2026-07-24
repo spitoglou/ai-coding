@@ -52,12 +52,12 @@ Uses the archive script bundled with the agent-coordination skill:
 
 ```bash
 # Run with UV (Python projects)
-uv run .claude/skills/agent-coordination/scripts/archive_reports.py [days]
+uv run --script .claude/skills/agent-coordination/scripts/archive_reports.py [days]
 
 # Examples
-uv run .claude/skills/agent-coordination/scripts/archive_reports.py     # Default: 7 days
-uv run .claude/skills/agent-coordination/scripts/archive_reports.py 14  # 14 days
-uv run .claude/skills/agent-coordination/scripts/archive_reports.py 7 --dry-run  # Preview only
+uv run --script .claude/skills/agent-coordination/scripts/archive_reports.py     # Default: 7 days
+uv run --script .claude/skills/agent-coordination/scripts/archive_reports.py 14  # 14 days
+uv run --script .claude/skills/agent-coordination/scripts/archive_reports.py 7 --dry-run  # Preview only
 ```
 
 ## When to Run

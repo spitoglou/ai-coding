@@ -97,8 +97,8 @@ This toolkit is designed to be ported into other projects. Two ways:
 **From this repo, into a target project:**
 
 ```bash
-python3 install.py /path/to/your-project        # install or update the core
-python3 install.py --check /path/to/your-project  # preview what an update would change
+uv run --script install.py /path/to/your-project        # install or update the core
+uv run --script install.py --check /path/to/your-project  # preview what an update would change
 ```
 
 This copies the core into the target, bootstraps runtime state, and adapts to
@@ -110,7 +110,7 @@ overwritten. `--check` shows a file-level preview first: `~` overwritten,
 **Manual copy:** copy `.claude/` into your project, then bootstrap:
 
 ```bash
-python3 .claude/skills/agent-coordination/scripts/bootstrap.py
+uv run --script .claude/skills/agent-coordination/scripts/bootstrap.py
 ```
 
 Bootstrap is idempotent — it seeds `_registry.md`/`_tech-debt.md` from their
@@ -127,7 +127,7 @@ Two passes keep `.claude/project.md` current:
    session, and is safe to run by hand:
 
    ```bash
-   python3 .claude/skills/agent-coordination/scripts/adapt.py
+   uv run --script .claude/skills/agent-coordination/scripts/adapt.py
    ```
 
 2. **Judgement-based** — the `/adapt` command has an agent read the repo and
@@ -148,10 +148,14 @@ directories) present even if `reports/` was cleaned or the toolkit was just
 ported in — no manual bootstrap needed. It's idempotent and never blocks the
 session. To disable, remove the `SessionStart` entry from `.claude/settings.json`.
 
-All infrastructure scripts are Python (cross-platform: Linux, macOS, Windows) —
-there are no shell scripts to maintain. The hook invokes `python3`; on a native
-Windows shell where the interpreter is `python`, change the one command in
-`settings.json` accordingly (Git Bash / WSL already provide `python3`).
+All infrastructure scripts are Python, managed and run with **UV**: each is a
+self-contained [PEP 723](https://peps.python.org/pep-0723/) script (inline
+`requires-python`, no external dependencies), invoked as
+`uv run --script <path>`. UV provisions the interpreter, so there is nothing to
+`pip install` and no `python` vs `python3` difference across OSes — it works the
+same on Linux, macOS, and Windows (native, WSL, or Git Bash). The only
+prerequisite is [UV](https://docs.astral.sh/uv/), which the toolkit already
+requires.
 
 ## Registry Workflow
 
@@ -162,11 +166,11 @@ format the tooling expects (avoid hand-editing `_registry.md`):
 SC=.claude/skills/agent-coordination/scripts
 
 # Record a completed report (--name is the stem WITHOUT the date)
-uv run $SC/add_report.py --category review --name review-src \
+uv run --script $SC/add_report.py --category review --name review-src \
     --status Completed --summary "Peer review of src/" --scaffold
 
 # Lint the registry (run by /agents:ci): bad rows, dates, links, missing files
-uv run $SC/validate_registry.py
+uv run --script $SC/validate_registry.py
 ```
 
 ## Customization

@@ -7,7 +7,6 @@ scripts too.
 
 import shutil
 import subprocess
-import sys
 from pathlib import Path
 
 import pytest
@@ -22,7 +21,7 @@ def project(tmp_path: Path) -> Path:
     """A bootstrapped project copy: tmp_path/.claude with seeded registries."""
     shutil.copytree(CLAUDE_SRC, tmp_path / ".claude")
     subprocess.run(
-        [sys.executable, f"{SCRIPTS_REL}/bootstrap.py"],
+        ["uv", "run", "--script", f"{SCRIPTS_REL}/bootstrap.py"],
         cwd=tmp_path,
         check=True,
         capture_output=True,
@@ -34,7 +33,7 @@ def project(tmp_path: Path) -> Path:
 def run_script(project_dir: Path, script: str, *args: str) -> subprocess.CompletedProcess:
     """Run a python toolkit script with the project dir as cwd."""
     return subprocess.run(
-        [sys.executable, f"{SCRIPTS_REL}/{script}", *args],
+        ["uv", "run", "--script", f"{SCRIPTS_REL}/{script}", *args],
         cwd=project_dir,
         capture_output=True,
         text=True,

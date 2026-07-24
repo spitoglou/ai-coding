@@ -2,7 +2,6 @@
 
 import shutil
 import subprocess
-import sys
 from pathlib import Path
 
 from conftest import CLAUDE_SRC
@@ -19,7 +18,7 @@ def make_project(tmp_path: Path) -> Path:
 
 def run_adapt(project: Path):
     return subprocess.run(
-        [sys.executable, ADAPT_REL], cwd=project, capture_output=True, text=True
+        ["uv", "run", "--script", ADAPT_REL], cwd=project, capture_output=True, text=True
     )
 
 

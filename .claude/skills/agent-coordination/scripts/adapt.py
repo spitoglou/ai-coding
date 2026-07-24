@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.10"
+# dependencies = []
+# ///
 """Adapt the toolkit's generic core to this project (deterministic pass).
 
 Cross-platform replacement for adapt.sh. Seeds .claude/project.md from the
@@ -10,7 +14,7 @@ Idempotent and rerunnable. The richer, judgement-based adaptation is done by the
 `/adapt` command.
 
 Usage: run from the project root
-    python adapt.py
+    uv run --script adapt.py
 """
 
 import re

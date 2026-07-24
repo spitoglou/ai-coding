@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.10"
+# dependencies = []
+# ///
 """Bootstrap the agent-coordination runtime state in a project.
 
 Cross-platform replacement for bootstrap.sh. Idempotent: safe to run
@@ -7,7 +11,7 @@ overwriting existing ones), creates the report category directories the
 commands expect, and runs the deterministic project adaptation (adapt.py).
 
 Usage: run from the project root (the directory that contains .claude/)
-    python bootstrap.py
+    uv run --script bootstrap.py
 """
 
 import subprocess
@@ -52,7 +56,7 @@ def main() -> int:
 
     # Adapt the generic core to this project. Non-fatal: never block bootstrap.
     if Path(ADAPT).exists():
-        result = subprocess.run([sys.executable, ADAPT])
+        result = subprocess.run(["uv", "run", "--script", ADAPT])
         if result.returncode != 0:
             print("⚠️  adapt.py failed, skipped", file=sys.stderr)
 

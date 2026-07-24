@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.10"
+# dependencies = []
+# ///
 """Agent Deliverable Verification Script.
 
 Cross-platform Python replacement for verify.sh.
 
-Usage: python verify.py <category> <name> <date> [git-path]
+Usage: uv run --script verify.py <category> <name> <date> [git-path]
 Returns: 0 if all checks pass, 1 if any fail
 """
 
@@ -124,8 +128,8 @@ def main() -> int:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python verify.py analysis codebase-structure 2025-01-02
-  python verify.py review pr-123 2025-01-02 src/
+  uv run --script verify.py analysis codebase-structure 2025-01-02
+  uv run --script verify.py review pr-123 2025-01-02 src/
         """,
     )
     parser.add_argument("category", help="Report category (e.g., analysis, review)")

@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.10"
+# dependencies = []
+# ///
 """SessionStart hook: keep the agent-coordination runtime state self-healing.
 
 Cross-platform replacement for session-start.sh. Runs the idempotent bootstrap
@@ -10,7 +14,6 @@ Registered in .claude/settings.json. Remove that entry to disable.
 """
 
 import subprocess
-import sys
 from pathlib import Path
 
 BOOTSTRAP = Path(".claude/skills/agent-coordination/scripts/bootstrap.py")
@@ -20,7 +23,7 @@ def main() -> int:
     if BOOTSTRAP.exists():
         try:
             result = subprocess.run(
-                [sys.executable, str(BOOTSTRAP)],
+                ["uv", "run", "--script", str(BOOTSTRAP)],
                 capture_output=True, text=True,
             )
             if result.returncode == 0:

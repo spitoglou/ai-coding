@@ -93,7 +93,7 @@ After each agent completes:
 
 ```bash
 # Verify deliverables exist
-uv run .claude/skills/agent-coordination/scripts/verify.py "[category]" "[name]" "[date]"
+uv run --script .claude/skills/agent-coordination/scripts/verify.py "[category]" "[name]" "[date]"
 ```
 
 **Then update registries:**

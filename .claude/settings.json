@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/hooks/session_start.py"
+            "command": "uv run --script .claude/hooks/session_start.py"
           }
         ]
       }

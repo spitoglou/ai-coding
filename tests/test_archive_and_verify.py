@@ -1,7 +1,6 @@
 """Tests for archive_reports.py and verify.py."""
 
 import subprocess
-import sys
 from pathlib import Path
 
 from conftest import run_script
@@ -42,7 +41,7 @@ def test_archive_dry_run_moves_nothing(project: Path):
 
 def _verify(project: Path, *args: str):
     return subprocess.run(
-        [sys.executable, ".claude/skills/agent-coordination/scripts/verify.py", *args],
+        ["uv", "run", "--script", ".claude/skills/agent-coordination/scripts/verify.py", *args],
         cwd=project, capture_output=True, text=True,
     )
 

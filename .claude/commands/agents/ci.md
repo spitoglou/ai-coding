@@ -58,7 +58,7 @@ Fall back to detecting project type and running the defaults below:
    ```bash
    echo "=== Step 5/5: Registry integrity ==="
    # Validate the report registry format (no-op-safe if reports/ is empty)
-   python3 .claude/skills/agent-coordination/scripts/validate_registry.py \
+   uv run --script .claude/skills/agent-coordination/scripts/validate_registry.py \
        2>/dev/null || echo "registry validation skipped (no registry yet)"
    ```
 

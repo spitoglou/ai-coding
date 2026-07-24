@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.10"
+# dependencies = []
+# ///
 """Validate the report registry's format and integrity.
 
 Catches the drift that would make archive_reports.py silently no-op:
@@ -6,7 +10,7 @@ malformed rows, bad dates, link-text/target mismatch, missing report files,
 duplicate entries, and unknown status values.
 
 Usage:
-    python validate_registry.py [--reports-dir .claude/reports] [--strict]
+    uv run --script validate_registry.py [--reports-dir .claude/reports] [--strict]
 
 Exit code: 0 if no errors, 1 if any errors. With --strict, warnings also fail.
 """

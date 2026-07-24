@@ -1,7 +1,6 @@
 """Tests for bootstrap.py and install.py (idempotency + non-destructiveness)."""
 
 import subprocess
-import sys
 from pathlib import Path
 
 from conftest import REPO_ROOT, SCRIPTS_REL
@@ -19,7 +18,7 @@ def test_bootstrap_is_non_destructive(project: Path):
     reg = project / ".claude/reports/_registry.md"
     reg.write_text(reg.read_text() + "\nSENTINEL_LOCAL\n")
     subprocess.run(
-        [sys.executable, f"{SCRIPTS_REL}/bootstrap.py"],
+        ["uv", "run", "--script", f"{SCRIPTS_REL}/bootstrap.py"],
         cwd=project, check=True, capture_output=True, text=True,
     )
     assert "SENTINEL_LOCAL" in reg.read_text()
@@ -31,7 +30,7 @@ def test_install_preserves_local_reports(tmp_path: Path):
 
     def install():
         return subprocess.run(
-            [sys.executable, "install.py", str(target)],
+            ["uv", "run", "--script", "install.py", str(target)],
             cwd=REPO_ROOT, capture_output=True, text=True,
         )
 
@@ -68,10 +67,10 @@ def test_install_preserves_local_reports(tmp_path: Path):
 def test_install_check_is_read_only(tmp_path: Path):
     target = tmp_path / "app"
     (target / ".claude").mkdir(parents=True)
-    subprocess.run([sys.executable, "install.py", str(target)],
+    subprocess.run(["uv", "run", "--script", "install.py", str(target)],
                    cwd=REPO_ROOT, capture_output=True, text=True, check=True)
     before = (target / ".claude/project.md").read_text()
-    r = subprocess.run([sys.executable, "install.py", "--check", str(target)],
+    r = subprocess.run(["uv", "run", "--script", "install.py", "--check", str(target)],
                        cwd=REPO_ROOT, capture_output=True, text=True)
     assert r.returncode == 0, r.stderr
     # Up-to-date core reports no changes and touches nothing.
