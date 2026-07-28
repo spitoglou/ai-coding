@@ -148,4 +148,8 @@ Examples:
 
 
 if __name__ == "__main__":
+    # Windows defaults piped stdout/stderr to a legacy codepage (cp1252), which
+    # makes non-ASCII report paths raise UnicodeEncodeError. Force UTF-8.
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
     sys.exit(main())

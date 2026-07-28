@@ -37,7 +37,7 @@ REPORT_TEMPLATES = ("_registry-template.md", "_tech-debt-template.md")
 
 def read_version() -> str:
     try:
-        return (SRC_CLAUDE / "VERSION").read_text().strip()
+        return (SRC_CLAUDE / "VERSION").read_text(encoding="utf-8").strip()
     except OSError:
         return "unknown"
 
@@ -63,7 +63,7 @@ def do_check(target_claude: Path) -> int:
     target_version = "none"
     vfile = target_claude / "VERSION"
     if vfile.exists():
-        target_version = vfile.read_text().strip()
+        target_version = vfile.read_text(encoding="utf-8").strip()
 
     print(f"Core version:   source v{read_version()}  |  target v{target_version}")
     print("Changes an update would apply to the core (project.md/reports untouched):")
@@ -134,4 +134,8 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
+    # Windows defaults piped stdout/stderr to a legacy codepage (cp1252), which
+    # makes the status glyphs above raise UnicodeEncodeError. Force UTF-8.
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
     raise SystemExit(main())

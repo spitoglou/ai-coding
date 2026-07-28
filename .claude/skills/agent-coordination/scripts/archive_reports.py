@@ -11,6 +11,7 @@ to the archive directory while preserving structure and maintaining history.
 
 import re
 import shutil
+import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -77,7 +78,7 @@ def archive_reports(days_threshold: int = 7, dry_run: bool = False) -> None:
         archive_dir.mkdir(exist_ok=True)
 
     # Read current registry
-    with open(registry_file, 'r') as f:
+    with open(registry_file, 'r', encoding="utf-8") as f:
         lines = f.readlines()
 
     # Process registry
@@ -135,7 +136,7 @@ def archive_reports(days_threshold: int = 7, dry_run: bool = False) -> None:
 
     # Write updated registry
     if not dry_run:
-        with open(registry_file, 'w') as f:
+        with open(registry_file, 'w', encoding="utf-8") as f:
             f.writelines(remaining_entries)
         print(f"\n✅ Updated active registry: {registry_file}")
     else:
@@ -144,7 +145,7 @@ def archive_reports(days_threshold: int = 7, dry_run: bool = False) -> None:
     # Create dated archive registry
     if archived_entries and not dry_run:
         # Create new dated archive registry (always creates new file)
-        with open(archive_registry, 'w') as f:
+        with open(archive_registry, 'w', encoding="utf-8") as f:
             # Create header
             f.write("# Archived Reports\n\n")
             f.write(f"**Archive Date:** {datetime.now().strftime('%Y-%m-%d')}\n")
@@ -194,6 +195,11 @@ def archive_reports(days_threshold: int = 7, dry_run: bool = False) -> None:
 
 if __name__ == "__main__":
     import argparse
+
+    # Windows defaults piped stdout/stderr to a legacy codepage (cp1252), which
+    # makes the status glyphs above raise UnicodeEncodeError. Force UTF-8.
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
 
     parser = argparse.ArgumentParser(description="Archive old registry entries")
     parser.add_argument(

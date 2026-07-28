@@ -6,7 +6,7 @@ from conftest import run_script
 
 
 def registry(project: Path) -> str:
-    return (project / ".claude/reports/_registry.md").read_text()
+    return (project / ".claude/reports/_registry.md").read_text(encoding="utf-8")
 
 
 def test_add_report_writes_canonical_row(project: Path):
@@ -59,6 +59,10 @@ def test_validate_passes_for_scaffolded_entry(project: Path):
     )
     v = run_script(project, "validate_registry.py")
     assert v.returncode == 0, v.stdout + v.stderr
+    # A registered report must not also be reported as an orphan on disk. This
+    # regressed on Windows, where the on-disk relative path uses backslashes
+    # and never matched the registry's forward-slash targets.
+    assert "security-scan-2026-07-24.md" not in v.stdout
 
 
 def test_validate_flags_missing_file(project: Path):
@@ -75,7 +79,7 @@ def test_validate_flags_missing_file(project: Path):
 
 def test_validate_flags_bad_date_and_status(project: Path):
     reg = project / ".claude/reports/_registry.md"
-    lines = reg.read_text().splitlines(keepends=True)
+    lines = reg.read_text(encoding="utf-8").splitlines(keepends=True)
     for i, line in enumerate(lines):
         if line.startswith("### Review"):
             lines[i + 1:i + 1] = [
@@ -84,7 +88,7 @@ def test_validate_flags_bad_date_and_status(project: Path):
                 "| [b.md](review/b.md) | 07-24-2026 | Weird | bad |\n",
             ]
             break
-    reg.write_text("".join(lines))
+    reg.write_text("".join(lines), encoding="utf-8")
     v = run_script(project, "validate_registry.py")
     assert v.returncode == 1
     assert "invalid date" in v.stdout

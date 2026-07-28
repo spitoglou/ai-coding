@@ -18,17 +18,18 @@ def make_project(tmp_path: Path) -> Path:
 
 def run_adapt(project: Path):
     return subprocess.run(
-        ["uv", "run", "--script", ADAPT_REL], cwd=project, capture_output=True, text=True
+        ["uv", "run", "--script", ADAPT_REL], cwd=project, capture_output=True,
+        text=True, encoding="utf-8",
     )
 
 
 def profile(project: Path) -> str:
-    return (project / ".claude/project.md").read_text()
+    return (project / ".claude/project.md").read_text(encoding="utf-8")
 
 
 def test_adapt_seeds_project_md_from_template(tmp_path: Path):
     project = make_project(tmp_path)
-    (project / "pyproject.toml").write_text('[project]\nname = "demo-app"\n')
+    (project / "pyproject.toml").write_text('[project]\nname = "demo-app"\n', encoding="utf-8")
     r = run_adapt(project)
     assert r.returncode == 0, r.stderr
     text = profile(project)
@@ -39,7 +40,7 @@ def test_adapt_seeds_project_md_from_template(tmp_path: Path):
 
 def test_adapt_detects_node(tmp_path: Path):
     project = make_project(tmp_path)
-    (project / "package.json").write_text('{"name": "web-thing"}')
+    (project / "package.json").write_text('{"name": "web-thing"}', encoding="utf-8")
     run_adapt(project)
     text = profile(project)
     assert "**Type:** Node.js" in text
@@ -49,18 +50,18 @@ def test_adapt_detects_node(tmp_path: Path):
 
 def test_adapt_preserves_manual_notes_and_refreshes_block(tmp_path: Path):
     project = make_project(tmp_path)
-    (project / "package.json").write_text('{"name": "web-thing"}')
+    (project / "package.json").write_text('{"name": "web-thing"}', encoding="utf-8")
     run_adapt(project)
 
     # Add a manual note below the managed block.
     md = project / ".claude/project.md"
-    md.write_text(md.read_text().replace(
+    md.write_text(md.read_text(encoding="utf-8").replace(
         "### Architecture\n", "### Architecture\n\nKEEP_ME: hexagonal, 3 adapters\n"
-    ))
+    ), encoding="utf-8")
 
     # Switch toolchain and rerun.
     (project / "package.json").unlink()
-    (project / "pyproject.toml").write_text('[project]\nname = "demo-app"\n')
+    (project / "pyproject.toml").write_text('[project]\nname = "demo-app"\n', encoding="utf-8")
     run_adapt(project)
 
     text = profile(project)

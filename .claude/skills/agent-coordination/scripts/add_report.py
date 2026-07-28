@@ -118,7 +118,8 @@ def scaffold_report(path: Path, name: str, date: str, status: str, summary: str)
         f"**Status:** {status}\n\n"
         f"## Summary\n\n{summary}\n\n"
         f"## Findings\n\n_TODO_\n\n"
-        f"## Recommendations\n\n_TODO_\n"
+        f"## Recommendations\n\n_TODO_\n",
+        encoding="utf-8",
     )
 
 
@@ -146,7 +147,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"❌ Registry not found: {registry} (run bootstrap.py first)", file=sys.stderr)
         return 1
 
-    lines = registry.read_text().splitlines(keepends=True)
+    lines = registry.read_text(encoding="utf-8").splitlines(keepends=True)
     if not any(line.startswith(BY_CATEGORY_HEADING) for line in lines):
         print(f"❌ Registry missing '{BY_CATEGORY_HEADING}' section", file=sys.stderr)
         return 1
@@ -170,7 +171,7 @@ def main(argv: list[str] | None = None) -> int:
     row = build_row(category, filename, today, args.status, args.summary)
     lines = insert_row(lines, cat_idx, row)
     lines = update_last_updated(lines, today)
-    registry.write_text("".join(lines))
+    registry.write_text("".join(lines), encoding="utf-8")
 
     if args.scaffold:
         title = filename[:-3]  # basename without .md
@@ -181,4 +182,8 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
+    # Windows defaults piped stdout/stderr to a legacy codepage (cp1252), which
+    # makes the status glyphs above raise UnicodeEncodeError. Force UTF-8.
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
     raise SystemExit(main())

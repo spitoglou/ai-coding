@@ -23,7 +23,7 @@ def test_archive_moves_old_report(project: Path):
     assert not (project / ".claude/reports/review/old-2000-01-01.md").exists()
     assert (project / ".claude/reports/archive/review/old-2000-01-01.md").exists()
     # Removed from active registry.
-    reg = (project / ".claude/reports/_registry.md").read_text()
+    reg = (project / ".claude/reports/_registry.md").read_text(encoding="utf-8")
     assert "old-2000-01-01.md](review/old-2000-01-01.md)" not in reg
 
 
@@ -42,7 +42,7 @@ def test_archive_dry_run_moves_nothing(project: Path):
 def _verify(project: Path, *args: str):
     return subprocess.run(
         ["uv", "run", "--script", ".claude/skills/agent-coordination/scripts/verify.py", *args],
-        cwd=project, capture_output=True, text=True,
+        cwd=project, capture_output=True, text=True, encoding="utf-8",
     )
 
 

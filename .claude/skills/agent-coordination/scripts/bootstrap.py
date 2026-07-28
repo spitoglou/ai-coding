@@ -32,7 +32,10 @@ def seed_from_template(template: Path, target: Path, today: str) -> None:
     if target.exists():
         print(f"• Exists, leaving as-is: {target}")
     elif template.exists():
-        target.write_text(template.read_text().replace("YYYY-MM-DD", today))
+        target.write_text(
+            template.read_text(encoding="utf-8").replace("YYYY-MM-DD", today),
+            encoding="utf-8",
+        )
         print(f"✅ Seeded: {target}")
     else:
         print(f"⚠️  Template missing, skipped: {template}", file=sys.stderr)
@@ -65,4 +68,8 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    # Windows defaults piped stdout/stderr to a legacy codepage (cp1252), which
+    # makes the status glyphs above raise UnicodeEncodeError. Force UTF-8.
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
     raise SystemExit(main())

@@ -34,7 +34,7 @@ def detect_toolchain(root: Path) -> dict:
 
     def field(path: Path, pattern: str) -> str | None:
         try:
-            m = re.search(pattern, path.read_text(), re.MULTILINE)
+            m = re.search(pattern, path.read_text(encoding="utf-8"), re.MULTILINE)
             return m.group(1) if m else None
         except OSError:
             return None
@@ -98,10 +98,10 @@ def main() -> int:
         if not template.exists():
             print(f"❌ Template missing: {template}", file=sys.stderr)
             return 1
-        project_md.write_text(template.read_text())
+        project_md.write_text(template.read_text(encoding="utf-8"), encoding="utf-8")
         print(f"✅ Created {project_md} from template")
 
-    text = project_md.read_text()
+    text = project_md.read_text(encoding="utf-8")
     if START not in text or END not in text:
         print(f"❌ {project_md} is missing the CORE:AUTODETECT markers.", file=sys.stderr)
         print(f"   Restore them from {template} (or delete project.md to reseed).", file=sys.stderr)
@@ -109,11 +109,15 @@ def main() -> int:
 
     info = detect_toolchain(Path("."))
     block = build_block(info, date_cls.today().isoformat())
-    project_md.write_text(splice_block(text, block))
+    project_md.write_text(splice_block(text, block), encoding="utf-8")
 
     print(f"✅ Adapted core to: {info['name']} ({info['type']}) — refreshed AUTODETECT block in {project_md}")
     return 0
 
 
 if __name__ == "__main__":
+    # Windows defaults piped stdout/stderr to a legacy codepage (cp1252), which
+    # makes the status glyphs above raise UnicodeEncodeError. Force UTF-8.
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
     raise SystemExit(main())

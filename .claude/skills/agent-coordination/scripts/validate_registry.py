@@ -39,7 +39,7 @@ def validate(reports_dir: Path) -> tuple[list[str], list[str]]:
     seen: set[str] = set()
     referenced: set[str] = set()
 
-    for lineno, line in enumerate(registry.read_text().splitlines(), start=1):
+    for lineno, line in enumerate(registry.read_text(encoding="utf-8").splitlines(), start=1):
         # Only consider markdown-link table rows (report entries).
         if not line.lstrip().startswith("| ["):
             continue
@@ -79,8 +79,10 @@ def validate(reports_dir: Path) -> tuple[list[str], list[str]]:
         rel = path.relative_to(reports_dir)
         if len(rel.parts) < 2 or rel.parts[0] in skip_dirs:
             continue  # top-level templates/registry, or archived files
-        if str(rel) not in referenced:
-            warnings.append(f"Unregistered report file on disk: {rel}")
+        # Registry targets are always POSIX-style, so compare in that form:
+        # str(rel) would yield 'review\name.md' on Windows and never match.
+        if rel.as_posix() not in referenced:
+            warnings.append(f"Unregistered report file on disk: {rel.as_posix()}")
 
     return errors, warnings
 
@@ -109,4 +111,8 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
+    # Windows defaults piped stdout/stderr to a legacy codepage (cp1252), which
+    # makes the status glyphs above raise UnicodeEncodeError. Force UTF-8.
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
     raise SystemExit(main())

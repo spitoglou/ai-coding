@@ -26,6 +26,7 @@ def project(tmp_path: Path) -> Path:
         check=True,
         capture_output=True,
         text=True,
+        encoding="utf-8",
     )
     return tmp_path
 
@@ -37,4 +38,5 @@ def run_script(project_dir: Path, script: str, *args: str) -> subprocess.Complet
         cwd=project_dir,
         capture_output=True,
         text=True,
+        encoding="utf-8",
     )
