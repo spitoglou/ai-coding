@@ -1,14 +1,25 @@
 ---
 description: Multi-level code review with peer, architecture, security, and reliability checks.
 argument-hint: <path> [--quick|--security|--all]
-allowed-tools: Read, Glob, Grep, Bash
+allowed-tools: Read, Write, Glob, Grep, Bash, Task
 ---
 
 # Full Review Protocol
 
 Multi-level code review following enterprise engineering standards.
 
-**Before proceeding:** Read the `agent-coordination` skill at `.claude/skills/agent-coordination/SKILL.md` for registry management, verification scripts, and coordination protocols.
+**Before proceeding:** Read the `agent-coordination` skill at `.claude/skills/agent-coordination/SKILL.md` for registry management, verification scripts, and coordination protocols. This command follows its **Report Naming** and **Finding Severity** rules exactly — that is what makes each level's output interchangeable with the single-purpose command that produces the same report.
+
+**Level ≡ command equivalences.** Each level writes the same report the matching
+standalone command writes, so a level already covered today can be reused
+instead of re-run:
+
+| Level | Equivalent command | Report |
+|-------|--------------------|--------|
+| L1 | `/agents:review <path>` | `review/review-[scope]-DATE.md` |
+| L2 | — | `architecture/architecture-[scope]-DATE.md` |
+| L3 | `/agents:security <path>` | `security/security-[scope]-DATE.md` |
+| L4 | — | `sre/sre-reliability-[scope]-DATE.md` |
 
 ## Review Target
 
@@ -63,11 +74,14 @@ Severity classification:
 - NON-BLOCKING: Should fix, can defer
 - NIT: Nice to have improvements
 
-Output: .claude/reports/review/L1-peer-YYYY-MM-DD.md
+Output: .claude/reports/review/review-[scope]-YYYY-MM-DD.md
+Structure the report as: Summary / Findings / Recommendations.
+Give every finding a severity label and a `file:line` location.
 ")
 ```
 
-**After completion:** Update `_registry.md` with L1 report entry.
+**After completion:** verify and register (see [Post-Review Actions](#post-review-actions))
+with `--category review --name "review-[scope]"`.
 
 ---
 
@@ -96,11 +110,15 @@ Assessment criteria:
 - API design quality and versioning
 - Scalability implications
 
-Output: .claude/reports/review/L2-arch-YYYY-MM-DD.md
+Use the same severity labels as L1: BLOCKING / NON-BLOCKING / NIT.
+
+Output: .claude/reports/architecture/architecture-[scope]-YYYY-MM-DD.md
+Structure the report as: Summary / Findings / Recommendations.
 ")
 ```
 
-**After completion:** Update `_registry.md` with L2 report entry.
+**After completion:** verify and register with
+`--category architecture --name "architecture-[scope]"`.
 
 ---
 
@@ -131,11 +149,15 @@ Security checklist:
 - Data exposure risks
 - Dependency CVE check
 
-Output: .claude/reports/security/L3-security-YYYY-MM-DD.md
+Use the same severity labels as L1: BLOCKING / NON-BLOCKING / NIT.
+
+Output: .claude/reports/security/security-[scope]-YYYY-MM-DD.md
+Structure the report as: Summary / Findings / Recommendations.
 ")
 ```
 
-**After completion:** Update `_registry.md` with L3 report entry.
+**After completion:** verify and register with
+`--category security --name "security-[scope]"`.
 
 ---
 
@@ -165,11 +187,15 @@ Reliability assessment:
 - Graceful degradation capability
 - Rollback safety and procedures
 
-Output: .claude/reports/sre/L4-reliability-YYYY-MM-DD.md
+Use the same severity labels as L1: BLOCKING / NON-BLOCKING / NIT.
+
+Output: .claude/reports/sre/sre-reliability-[scope]-YYYY-MM-DD.md
+Structure the report as: Summary / Findings / Recommendations.
 ")
 ```
 
-**After completion:** Update `_registry.md` with L4 report entry.
+**After completion:** verify and register with
+`--category sre --name "sre-reliability-[scope]"`.
 
 ---
 
@@ -185,26 +211,50 @@ Based on the `$ARGUMENTS` provided:
 **Sequencing rule (from agent-coordination skill):**  
 Each level MAY need prior level's output → Execute sequentially, verify between each.
 
+**Reuse rule.** Because each level writes the same report its standalone
+equivalent writes, check `<prior_work>` first: if today's registry already has
+the report for this scope and level — e.g. `/agents:review src/` ran an hour
+ago and L1 wants `review-src-[today].md` — read that report and feed its
+findings forward instead of re-running the agent. Say in the summary which
+levels were reused rather than freshly run.
+
 ---
 
 ## Post-Review Actions
 
+Run these after **each** level completes, before starting the next.
+
 ### Verify Deliverables
 
-After each agent completes, run verification:
-
 ```bash
-uv run --script .claude/skills/agent-coordination/scripts/verify.py "[category]" "[name]" "[date]"
+SC=.claude/skills/agent-coordination/scripts
+uv run --script $SC/verify.py "[category]" "[name]" "[date]"
 ```
+
+`[name]` is the report stem WITHOUT the date — e.g. `review-src`, not
+`review-src-2026-08-03.md`.
 
 ### Update Registries
 
-1. **Always:** Add each report to `_registry.md`
-2. **If issues deferred:** Add to `_tech-debt.md` with format:
+1. **Always:** register the report with `add_report.py`. Do not hand-edit
+   `_registry.md` — only this script produces the row format
+   `validate_registry.py` accepts:
+   ```bash
+   uv run --script $SC/add_report.py \
+       --category "[category]" --name "[name]" --status Completed \
+       --summary "[one-line summary]"
    ```
-   - [ ] **TD-NNN**: [Description]
-     - **Impact:** [Critical|High|Medium|Low]
-     - **Source:** full-review-YYYY-MM-DD.md
+2. **If issues deferred:** append a row to the **Open** table in
+   `.claude/reports/_tech-debt.md`. It is a table, not a checklist — match its
+   columns exactly:
+   ```
+   | TD-NNN | [area] | [description] | [Critical|High|Medium|Low] | YYYY-MM-DD | [source-report].md |
+   ```
+   Map review severities to the Severity column per the coordination skill:
+   BLOCKING → `Critical`/`High`, NON-BLOCKING → `Medium`, NIT → `Low`.
+   Get the next ID with:
+   ```bash
+   grep -oE 'TD-[0-9]+' .claude/reports/_tech-debt.md | sort -t- -k2 -n | tail -1
    ```
 
 ---
@@ -247,15 +297,21 @@ Items marked "won't fix now" → append to `.claude/reports/_tech-debt.md`
 - [ ] **CHANGES REQUESTED**: Blocking issues remain
 
 ## Report Links
-- L1: `.claude/reports/review/L1-peer-YYYY-MM-DD.md`
-- L2: `.claude/reports/review/L2-arch-YYYY-MM-DD.md`
-- L3: `.claude/reports/security/L3-security-YYYY-MM-DD.md`
-- L4: `.claude/reports/sre/L4-reliability-YYYY-MM-DD.md`
+- L1: `.claude/reports/review/review-[scope]-YYYY-MM-DD.md`
+- L2: `.claude/reports/architecture/architecture-[scope]-YYYY-MM-DD.md`
+- L3: `.claude/reports/security/security-[scope]-YYYY-MM-DD.md`
+- L4: `.claude/reports/sre/sre-reliability-[scope]-YYYY-MM-DD.md`
 ```
 
-**Output:** `.claude/reports/review/full-review-YYYY-MM-DD.md`
+**Output:** `.claude/reports/review/review-full-[scope]-YYYY-MM-DD.md`
 
-**Final step:** Add summary report to `_registry.md`.
+**Final step:** register the summary too:
+
+```bash
+uv run --script $SC/add_report.py --category review \
+    --name "review-full-[scope]" --status Completed \
+    --summary "Full review of [scope]: [n] blocking, [n] non-blocking"
+```
 
 ---
 

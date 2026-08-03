@@ -158,12 +158,12 @@ All reports go to `.claude/reports/[category]/`:
 | Category | Folder | Use For | Typical Agents |
 |----------|--------|---------|----------------|
 | analysis | `analysis/` | Research, EDA, data exploration | data-engineer, data-viz |
-| arch | `arch/` | Architecture decisions, ADRs, system design | architect, rfc |
+| architecture | `architecture/` | Architecture decisions, ADRs, system design | architect, rfc |
 | bugs | `bugs/` | Bug reports, root cause analysis | code-quality (debug) |
 | commits | `commits/` | Commit summaries, changelog entries | devops (git) |
 | design | `design/` | UI/UX reviews, design specs | ux-designer |
 | exec | `exec/` | Execution logs, command outputs | devops |
-| handoff | `handoff/` | Agent coordination, context transfers | (main agent) |
+| handoffs | `handoffs/` | Agent coordination, context transfers | (main agent) |
 | implementation | `implementation/` | Implementation plans, code specs | backend, frontend |
 | review | `review/` | Code reviews, PR reviews | code-quality (review) |
 | tests | `tests/` | Test plans, test results, coverage | test-engineer, qa |
@@ -173,7 +173,58 @@ All reports go to `.claude/reports/[category]/`:
 | ci | `ci/` | CI pipeline results | (bash/devops) |
 | archive | `archive/` | Old reports (moved, not deleted) | (archive script) |
 
-**Naming convention:** `[category]-[topic]-YYYY-MM-DD.md`
+These are exactly the directories `bootstrap.py` creates and the headings
+`_registry-template.md` carries. Writing to any other folder produces a report
+`validate_registry.py` reports as an unregistered orphan.
+
+---
+
+## Report Naming
+
+**Convention:** `[category]-[topic]-[scope]-YYYY-MM-DD.md`
+
+Every command that produces a report MUST follow this, so that two commands
+covering the same ground land on the same file instead of two half-duplicates.
+
+**Scope slug.** Derive from the review target so the filename says what was
+covered:
+
+| Target | Slug |
+|--------|------|
+| `src/` | `src` |
+| `src/api/` | `src-api` |
+| `.` or no target | `all` |
+| multiple paths | their common parent, else the paths joined by `-` |
+
+Lowercase; `/` and any non-alphanumeric become `-`; collapse repeats; strip
+leading `./` and trailing `/`.
+
+**Why the scope belongs in the name.** Without it, `/review-full src/` and
+`/review-full tests/` on the same day write the same filename — the second
+silently overwrites the first, and the registry gets a duplicate row that
+`validate_registry.py` rejects. It also makes the "check the registry for
+recent reports before starting" step work: the scope is what you compare.
+
+**Same scope, same day, same category = same file.** That is intended: a
+re-run replaces the earlier report rather than accumulating near-copies. This
+is what makes `/review-full --quick` and `/agents:review` interchangeable.
+
+---
+
+## Finding Severity
+
+One vocabulary for every review-type report, so findings from different
+commands can be aggregated into one summary:
+
+| Severity | Meaning |
+|----------|---------|
+| **BLOCKING** | Must fix before merge |
+| **NON-BLOCKING** | Should fix, can be deferred |
+| **NIT** | Optional improvement |
+
+When a finding is deferred to `_tech-debt.md`, map it to that registry's
+Severity column: BLOCKING → `Critical` or `High`, NON-BLOCKING → `Medium`,
+NIT → `Low`.
 
 ---
 

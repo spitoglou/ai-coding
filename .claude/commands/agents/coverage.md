@@ -1,8 +1,7 @@
 ---
-name: Agents: Coverage
 description: Invoke test-engineer agent for test coverage analysis.
-category: Agents
-tags: [agents, tests, coverage, quality]
+argument-hint: "[module or path]"
+allowed-tools: Read, Glob, Grep, Bash, Task
 ---
 
 **Purpose**

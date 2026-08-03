@@ -1,3 +1,8 @@
+---
+description: Execute the release procedure (version bump, changelog, tag) for this project.
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash
+---
+
 # Release Procedure
 
 Execute the release procedure using version management tools appropriate for the project.

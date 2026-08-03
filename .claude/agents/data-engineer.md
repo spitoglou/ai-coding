@@ -1,9 +1,8 @@
 ---
 name: data-engineer
 model: sonnet
-description: Data collection, analysis, and preprocessing. Modes - collect: scraping, API integration, acquisition | analyze: EDA, statistics, patterns | preprocess: cleaning, transformation, feature engineering. Full data pipeline support.
+description: "Data collection, analysis, and preprocessing. Modes - collect: scraping, API integration, acquisition | analyze: EDA, statistics, patterns | preprocess: cleaning, transformation, feature engineering. Full data pipeline support."
 tools: Read, Write, Edit, Grep, Glob, Bash, BashOutput, NotebookEdit, TodoWrite, WebFetch
-mode: collect | analyze | preprocess
 color: cyan
 ---
 

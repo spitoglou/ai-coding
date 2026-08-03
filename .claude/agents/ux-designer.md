@@ -1,9 +1,8 @@
 ---
 name: ux-designer
 model: sonnet
-description: UX/UI design and content. Modes - design: design reviews with Playwright, UX strategy, accessibility, design systems | copy: microcopy, error messages, user-facing content, tone/voice. Complete UX coverage.
+description: "UX/UI design and content. Modes - design: design reviews with Playwright, UX strategy, accessibility, design systems | copy: microcopy, error messages, user-facing content, tone/voice. Complete UX coverage."
 tools: Read, Write, Edit, Grep, Glob, Bash, BashOutput, KillShell, TodoWrite, WebFetch, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_click, mcp__playwright__browser_resize, mcp__playwright__browser_take_screenshot
-mode: design | copy
 color: magenta
 ---
 

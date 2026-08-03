@@ -72,6 +72,33 @@ uv run --script $SC/validate_registry.py            # exit 1 on errors
 uv run --script $SC/validate_registry.py --strict   # warnings (orphan files) also fail
 ```
 
+### Definition Frontmatter Lint
+
+Claude Code parses agent and command frontmatter as YAML, and a block that
+fails to parse is dropped silently — the agent never registers (invoking it
+fails with `Agent type 'x' not found`) and a command falls back to its first
+body line as its description. `bootstrap.py` runs this check at install; run it
+by hand after editing `.claude/agents/*.md` or `.claude/commands/**/*.md`:
+
+```bash
+uv run --script $SC/validate_frontmatter.py            # exit 1 on errors
+uv run --script $SC/validate_frontmatter.py --strict   # warnings also fail
+```
+
+**The trap:** an unquoted value containing `: ` is a YAML syntax error, because
+the parser reads the second colon as another mapping key.
+
+```yaml
+description: Security review. Modes: scan (OWASP)     # rejects the whole file
+description: "Security review. Modes: scan (OWASP)"   # fine
+name: Agents: Review                                  # rejects the whole file
+```
+
+Supported keys — agents: `name`, `description`, `tools`, `model`, `color`.
+Commands: `description`, `argument-hint`, `allowed-tools`, `model`,
+`disable-model-invocation`. Note that `argument-hint: [days]` parses as a
+*list*, not text; quote it as `"[days]"`.
+
 ### Manual Verification (if script unavailable)
 
 ```bash
@@ -116,18 +143,25 @@ Report:
 
 ## Sequencing Examples
 
+> **Modes are prompt text, not a parameter.** Each agent documents its modes in
+> its own definition (`.claude/agents/<name>.md`), but the Task tool has no
+> `mode` argument — state the mode in the prompt, as below. Agent frontmatter
+> should not declare a `mode:` key either; it is not part of the schema and
+> nothing reads it. Keep definitions to the supported keys and let
+> `validate_frontmatter.py` enforce it.
+
 ### Parallel Safe
 ```
 # These don't share output files
-Task(code-quality, "Review src/api/ for security", mode: review)
-Task(code-quality, "Review src/models/ for correctness", mode: review)
+Task(code-quality, "Mode: review. Review src/api/ for security")
+Task(code-quality, "Mode: review. Review src/models/ for correctness")
 Task(test-engineer, "Run test coverage")
 ```
 
 ### Sequential Required
 ```
 # Architect output feeds frontend
-Task(architect, "Design dashboard API contract", mode: system)
+Task(architect, "Mode: system. Design dashboard API contract")
 # VERIFY: .claude/reports/arch/arch-dashboard-api-*.md exists
 Task(frontend, "Implement dashboard using API contract from arch report")
 # VERIFY: src/components/Dashboard/* exists

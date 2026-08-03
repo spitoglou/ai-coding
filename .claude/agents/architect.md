@@ -1,9 +1,8 @@
 ---
 name: architect
 model: sonnet
-description: System and pipeline architecture design. Modes - system: components, APIs, ADRs, deployment | pipeline: ETL/ML workflows, orchestration, data flows. Use for technical specifications and architectural decisions.
+description: "System and pipeline architecture design. Modes - system: components, APIs, ADRs, deployment | pipeline: ETL/ML workflows, orchestration, data flows. Use for technical specifications and architectural decisions."
 tools: Read, Write, Edit, Grep, Glob, Bash, TodoWrite
-mode: system | pipeline
 ---
 
 Architecture design agent with two operational modes.

@@ -1,8 +1,6 @@
 ---
-name: Agents: CI
 description: Run local CI pipeline (lint, type-check, test, security scan).
-category: Agents
-tags: [agents, ci, pipeline, quality]
+allowed-tools: Read, Glob, Grep, Bash
 ---
 
 **Purpose**
@@ -56,10 +54,14 @@ Fall back to detecting project type and running the defaults below:
 
    **Toolkit integrity (all project types):**
    ```bash
-   echo "=== Step 5/5: Registry integrity ==="
+   echo "=== Step 5/5: Registry + agent integrity ==="
    # Validate the report registry format (no-op-safe if reports/ is empty)
    uv run --script .claude/skills/agent-coordination/scripts/validate_registry.py \
        2>/dev/null || echo "registry validation skipped (no registry yet)"
+   # Validate agent/command frontmatter: a block that fails to parse means the
+   # definition silently does not load
+   uv run --script .claude/skills/agent-coordination/scripts/validate_frontmatter.py \
+       2>/dev/null || echo "frontmatter validation reported errors"
    ```
 
 3. Report results summary:
@@ -68,6 +70,7 @@ Fall back to detecting project type and running the defaults below:
    - Tests: Pass/Fail with test count
    - Security: Any obvious issues
    - Registry: Valid/Invalid (format, dates, links)
+   - Definitions: Valid/Invalid (agent + command frontmatter)
 
 4. If all pass, output success message.
 5. If failures, provide specific remediation steps.

@@ -1,7 +1,7 @@
 ---
 description: Archive old registry entries and reports (run weekly or when registry > 50 entries)
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [days]
+argument-hint: "[days]"
 ---
 
 # Archive Registry

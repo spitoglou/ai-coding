@@ -1,7 +1,7 @@
 ---
 description: Run tests with test-engineer agent
 allowed-tools: Bash
-argument-hint: [test suite or path]
+argument-hint: "[test suite or path]"
 ---
 
 # Run Tests

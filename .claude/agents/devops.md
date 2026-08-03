@@ -1,9 +1,8 @@
 ---
 name: devops
 model: sonnet
-description: Infrastructure and version control. Modes - infra: CI/CD, containers, IaC, monitoring, deployment | git: complex workflows, conflicts, rebasing, branching strategies. Use for deployment automation and Git operations.
+description: "Infrastructure and version control. Modes - infra: CI/CD, containers, IaC, monitoring, deployment | git: complex workflows, conflicts, rebasing, branching strategies. Use for deployment automation and Git operations."
 tools: Read, Write, Edit, Grep, Glob, Bash, BashOutput, KillShell, TodoWrite, WebFetch
-mode: infra | git
 color: magenta
 ---
 

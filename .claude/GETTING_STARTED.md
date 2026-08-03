@@ -171,6 +171,10 @@ uv run --script $SC/add_report.py --category review --name review-src \
 
 # Lint the registry (run by /agents:ci): bad rows, dates, links, missing files
 uv run --script $SC/validate_registry.py
+
+# Lint agent/command frontmatter (also run by bootstrap.py) — catches
+# definitions that would silently fail to load
+uv run --script $SC/validate_frontmatter.py
 ```
 
 ## Customization
@@ -178,6 +182,13 @@ uv run --script $SC/validate_registry.py
 - **Agent model:** each agent pins a default model in its frontmatter
   (`model: sonnet` in `.claude/agents/*.md`). Change that field to point an
   agent at a different model for your project.
+- **Agent frontmatter:** only `name`, `description`, `tools`, `model`, and
+  `color` are supported. Frontmatter is parsed as YAML, and a block that fails
+  to parse is dropped silently — the agent never registers, and invoking it
+  fails with `Agent type '<name>' not found`. The usual cause is an unquoted
+  value containing `: ` (e.g. `description: Review. Modes: scan`), which YAML
+  reads as a second mapping key; quote the value. Run `validate_frontmatter.py`
+  after editing agents or commands.
 - **Report categories:** add directories under `.claude/reports/` and a
   matching section in `_registry-template.md` to track new report types.
 

@@ -8,7 +8,9 @@
 Cross-platform replacement for bootstrap.sh. Idempotent: safe to run
 repeatedly. Seeds the report registries from their templates (without
 overwriting existing ones), creates the report category directories the
-commands expect, and runs the deterministic project adaptation (adapt.py).
+commands expect, runs the deterministic project adaptation (adapt.py), and
+lints agent/command frontmatter so a malformed definition is reported at
+install time rather than silently failing to load mid-task.
 
 Usage: run from the project root (the directory that contains .claude/)
     uv run --script bootstrap.py
@@ -24,7 +26,9 @@ CATEGORIES = [
     "implementation", "review", "tests", "security", "sre", "rfc", "ci", "archive",
 ]
 
-ADAPT = ".claude/skills/agent-coordination/scripts/adapt.py"
+SCRIPTS = ".claude/skills/agent-coordination/scripts"
+ADAPT = f"{SCRIPTS}/adapt.py"
+VALIDATE_FRONTMATTER = f"{SCRIPTS}/validate_frontmatter.py"
 
 
 def seed_from_template(template: Path, target: Path, today: str) -> None:
@@ -63,6 +67,19 @@ def main() -> int:
         if result.returncode != 0:
             print("⚠️  adapt.py failed, skipped", file=sys.stderr)
 
+    # Lint agent/command frontmatter. A block that fails to parse means the
+    # agent is missing from the registry (or the command loses its description)
+    # with no error until something tries to use it, so surface it here.
+    # Non-fatal: one bad definition must not block the rest of setup.
+    if Path(VALIDATE_FRONTMATTER).exists():
+        result = subprocess.run(["uv", "run", "--script", VALIDATE_FRONTMATTER])
+        if result.returncode != 0:
+            print(
+                "⚠️  The definitions above will NOT load correctly. Fix their "
+                "frontmatter, then restart the session.",
+                file=sys.stderr,
+            )
+
     print("Bootstrap complete.")
     return 0
 
@@ -70,6 +87,8 @@ def main() -> int:
 if __name__ == "__main__":
     # Windows defaults piped stdout/stderr to a legacy codepage (cp1252), which
     # makes the status glyphs above raise UnicodeEncodeError. Force UTF-8.
-    sys.stdout.reconfigure(encoding="utf-8")
-    sys.stderr.reconfigure(encoding="utf-8")
+    # line_buffering keeps our output ordered against the child scripts' when
+    # piped; block buffering would flush all of ours after theirs.
+    sys.stdout.reconfigure(encoding="utf-8", line_buffering=True)
+    sys.stderr.reconfigure(encoding="utf-8", line_buffering=True)
     raise SystemExit(main())

@@ -1,9 +1,8 @@
 ---
 name: rfc
 model: sonnet
-description: Request for Comments - structured design proposals with stakeholder review process. Modes: author (create RFC), review (evaluate RFC), decision (record outcome).
+description: "Request for Comments - structured design proposals with stakeholder review process. Modes: author (create RFC), review (evaluate RFC), decision (record outcome)."
 tools: Read, Write, Edit, Grep, Glob, TodoWrite
-mode: author | review | decision
 color: white
 ---
 

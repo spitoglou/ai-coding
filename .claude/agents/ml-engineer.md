@@ -1,9 +1,8 @@
 ---
 name: ml-engineer
 model: sonnet
-description: ML training, evaluation, and deployment. Modes - train: training scripts, hyperparameter tuning, experiment tracking | evaluate: metrics, error analysis, benchmarks | deploy: serving infrastructure, monitoring, A/B testing. Full MLOps lifecycle support.
+description: "ML training, evaluation, and deployment. Modes - train: training scripts, hyperparameter tuning, experiment tracking | evaluate: metrics, error analysis, benchmarks | deploy: serving infrastructure, monitoring, A/B testing. Full MLOps lifecycle support."
 tools: Read, Write, Edit, Grep, Glob, Bash, BashOutput, KillShell, NotebookEdit, TodoWrite, WebFetch
-mode: train | evaluate | deploy
 ---
 
 Machine learning engineering agent with three modes.

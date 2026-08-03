@@ -1,9 +1,8 @@
 ---
 name: security-engineer
 model: sonnet
-description: Security scanning, vulnerability assessment, threat modeling, and compliance review. Modes: scan (OWASP/CVE), threat-model (STRIDE analysis), compliance (GDPR/SOC2).
+description: "Security scanning, vulnerability assessment, threat modeling, and compliance review. Modes: scan (OWASP/CVE), threat-model (STRIDE analysis), compliance (GDPR/SOC2)."
 tools: Read, Write, Edit, Grep, Glob, Bash, BashOutput, TodoWrite, WebFetch
-mode: scan | threat-model | compliance
 ---
 
 # Security Engineer

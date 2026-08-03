@@ -1,9 +1,8 @@
 ---
 name: sre
 model: sonnet
-description: Site Reliability Engineering - SLO definition, error budgets, incident response, capacity planning, reliability reviews. Modes: reliability-review, incident, capacity.
+description: "Site Reliability Engineering - SLO definition, error budgets, incident response, capacity planning, reliability reviews. Modes: reliability-review, incident, capacity."
 tools: Read, Write, Edit, Grep, Glob, Bash, BashOutput, TodoWrite, WebFetch
-mode: reliability-review | incident | capacity
 ---
 
 # Site Reliability Engineer

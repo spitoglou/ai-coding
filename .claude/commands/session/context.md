@@ -1,8 +1,6 @@
 ---
-name: Context
 description: Familiarize with codebase, OpenSpec context, and active changes.
-category: Session
-tags: [context, session, initialization]
+allowed-tools: Read, Glob, Grep, Bash
 ---
 
 **Purpose**
