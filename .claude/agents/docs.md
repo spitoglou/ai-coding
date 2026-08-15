@@ -18,6 +18,17 @@ Documentation agent with two operational modes.
 **general:** Documentation files with clear structure, tested examples, diagrams
 **webdev:** Component libraries, API references, interactive examples, integration tutorials
 
+## Report
+
+Alongside the documentation files themselves, write a report to
+`.claude/reports/docs/docs-[topic]-[scope]-YYYY-MM-DD.md` covering what was
+documented, what was found stale or missing, and what remains. Without it,
+documentation is the only work type that leaves no trace in the registry — so
+drift stays invisible and cannot be picked up by a later task.
+
+Record anything deferred as tech debt (type: Documentation) rather than leaving
+it only in prose.
+
 ## Key Principles
 
 - Test all code examples before including

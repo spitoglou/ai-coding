@@ -26,6 +26,12 @@ VALID_STATUSES = {"Active", "Completed", "Superseded", "Archived"}
 # Canonical report row: | [name.md](category/name.md) | YYYY-MM-DD | Status | Summary |
 ROW_RE = re.compile(r"\| \[(.*?)\]\((.*?)\) \| (.*?) \| (.*?) \| (.*?) \|\s*$")
 
+# Entry-like lines that are NOT canonical rows. Without this, a registry written
+# entirely in the old bullet form ("- name | Status | Summary") validated clean
+# while archive_reports.py could parse none of it — the exact drift this script
+# exists to catch. Bullets are checked explicitly rather than ignored.
+NONCANONICAL_RE = re.compile(r"^\s*-\s+(?:\[.*?\]\(.*?\)|\S+)\s*\|")
+
 
 def validate(reports_dir: Path) -> tuple[list[str], list[str]]:
     """Return (errors, warnings) for the registry under reports_dir."""
@@ -39,7 +45,28 @@ def validate(reports_dir: Path) -> tuple[list[str], list[str]]:
     seen: set[str] = set()
     referenced: set[str] = set()
 
+    parsed_rows = 0
+    in_fence = False
+
     for lineno, line in enumerate(registry.read_text(encoding="utf-8").splitlines(), start=1):
+        # The registry documents its own row format in a fenced example. Skip
+        # fenced blocks so that example is not validated as a real entry.
+        if line.lstrip().startswith("```"):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+
+        # Bullet-style entries are a legacy format no tooling can parse. Flag
+        # them here rather than skipping, so drift fails loudly at the source.
+        if NONCANONICAL_RE.match(line):
+            errors.append(
+                f"L{lineno}: non-canonical bullet entry (archive_reports.py cannot parse it): "
+                f"{line.strip()!r}\n"
+                f"      want: | [name.md](category/name.md) | YYYY-MM-DD | Status | Summary |"
+            )
+            continue
+
         # Only consider markdown-link table rows (report entries).
         if not line.lstrip().startswith("| ["):
             continue
@@ -68,6 +95,7 @@ def validate(reports_dir: Path) -> tuple[list[str], list[str]]:
             errors.append(f"L{lineno}: duplicate entry for '{target}'")
         seen.add(target)
         referenced.add(target)
+        parsed_rows += 1
 
         report_path = reports_dir / target
         if not report_path.exists():

@@ -64,7 +64,7 @@ Generate comprehensive SLO document:
    - Downstream consumers
    - Dependency SLOs
 
-Output: .claude/reports/sre/slo-[service]-YYYY-MM-DD.md
+Output: .claude/reports/sre/sre-slo-[service]-YYYY-MM-DD.md
 ")
 ```
 
@@ -101,7 +101,7 @@ Analyze error budget status:
    - If degraded: reliability focus areas
    - If exhausted: required actions
 
-Output: .claude/reports/sre/budget-[service]-YYYY-MM-DD.md
+Output: .claude/reports/sre/sre-budget-[service]-YYYY-MM-DD.md
 ")
 ```
 

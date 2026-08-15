@@ -97,4 +97,4 @@ Fall back to detecting project type and running the defaults below:
 **Integration**
 - Use before `openspec archive` to ensure quality gate passes
 - Use before committing significant changes
-- Results can be saved to `.claude/reports/ci/ci-YYYY-MM-DD-HHMM.md` if needed
+- Results can be saved to `.claude/reports/ci/ci-pipeline-[scope]-YYYY-MM-DD.md` if needed

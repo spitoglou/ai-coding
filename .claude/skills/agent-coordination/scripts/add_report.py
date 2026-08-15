@@ -107,15 +107,23 @@ def update_last_updated(lines: list[str], today: str) -> list[str]:
     return lines
 
 
-def scaffold_report(path: Path, name: str, date: str, status: str, summary: str) -> None:
-    """Create a minimal report file if it does not already exist."""
+def scaffold_report(
+    path: Path, name: str, date: str, status: str, summary: str, agent: str
+) -> None:
+    """Create a minimal report file if it does not already exist.
+
+    The header block matches templates.md § Report Template, so a scaffolded
+    report is compliant by construction rather than by convention.
+    """
     if path.exists():
         return
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
         f"# {name}\n\n"
+        f"**Agent:** {agent}  \n"
         f"**Date:** {date}  \n"
         f"**Status:** {status}\n\n"
+        f"---\n\n"
         f"## Summary\n\n{summary}\n\n"
         f"## Findings\n\n_TODO_\n\n"
         f"## Recommendations\n\n_TODO_\n",
@@ -131,6 +139,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--status", default="Completed", choices=VALID_STATUSES)
     parser.add_argument("--date", default=None, help="ISO date (default: today)")
     parser.add_argument("--reports-dir", default=".claude/reports")
+    parser.add_argument("--agent", default="unspecified", help="Agent that produced the report")
     parser.add_argument("--scaffold", action="store_true", help="Create the report file if missing")
     args = parser.parse_args(argv)
 
@@ -175,7 +184,10 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.scaffold:
         title = filename[:-3]  # basename without .md
-        scaffold_report(reports_dir / category / filename, title, today, args.status, args.summary)
+        scaffold_report(
+            reports_dir / category / filename, title, today, args.status,
+            args.summary, args.agent,
+        )
 
     print(f"✅ Added registry entry: {category}/{filename} ({today}, {args.status})")
     return 0

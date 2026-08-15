@@ -154,6 +154,11 @@ done
 
 ## RFC Status Values
 
+These track the **RFC document's own lifecycle** and live in the RFC file's
+header. They are not registry statuses — the registry row for an RFC uses the
+canonical set in `SKILL.md` § *Status Values* (`Active` while the RFC is open,
+`Completed` once decided, `Superseded` when replaced).
+
 | Status | Meaning |
 |--------|---------|
 | Draft | Initial creation, not ready for review |

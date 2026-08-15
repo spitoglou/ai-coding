@@ -22,8 +22,9 @@ from datetime import date as date_cls
 from pathlib import Path
 
 CATEGORIES = [
-    "analysis", "architecture", "bugs", "commits", "design", "exec", "handoffs",
-    "implementation", "review", "tests", "security", "sre", "rfc", "ci", "archive",
+    "analysis", "architecture", "bugs", "ci", "commits", "design", "docs", "exec",
+    "handoffs", "implementation", "review", "rfc", "security", "sre", "tests",
+    "archive",
 ]
 
 SCRIPTS = ".claude/skills/agent-coordination/scripts"
@@ -32,14 +33,21 @@ VALIDATE_FRONTMATTER = f"{SCRIPTS}/validate_frontmatter.py"
 
 
 def seed_from_template(template: Path, target: Path, today: str) -> None:
-    """Seed target from template (with date filled in) unless it already exists."""
+    """Seed target from template (with date filled in) unless it already exists.
+
+    Only the `**Last Updated:**` line is dated. A blanket YYYY-MM-DD replacement
+    would also rewrite the format examples the template documents (the canonical
+    row, the archive filename), turning documentation into a stale literal.
+    """
     if target.exists():
         print(f"• Exists, leaving as-is: {target}")
     elif template.exists():
-        target.write_text(
-            template.read_text(encoding="utf-8").replace("YYYY-MM-DD", today),
-            encoding="utf-8",
-        )
+        lines = template.read_text(encoding="utf-8").splitlines(keepends=True)
+        for i, line in enumerate(lines):
+            if line.startswith("**Last Updated:**"):
+                lines[i] = f"**Last Updated:** {today}\n"
+                break
+        target.write_text("".join(lines), encoding="utf-8")
         print(f"✅ Seeded: {target}")
     else:
         print(f"⚠️  Template missing, skipped: {template}", file=sys.stderr)

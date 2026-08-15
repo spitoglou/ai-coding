@@ -77,6 +77,38 @@ def test_validate_flags_missing_file(project: Path):
     assert "report file missing" in v.stdout
 
 
+def test_validate_flags_bullet_entries(project: Path):
+    """A bullet-format registry must fail, not validate clean.
+
+    The pre-0.3 validator only inspected lines starting with "| [", so a
+    registry written entirely in the legacy bullet form passed with 0 errors
+    while archive_reports.py could parse none of it. That blind spot is why the
+    broken archiver went unnoticed.
+    """
+    reg = project / ".claude/reports/_registry.md"
+    reg.write_text(
+        reg.read_text(encoding="utf-8")
+        + "\n### Review\n"
+        + "- infrastructure-assessment-20260113 | Active | Consolidated assessment\n"
+        + "- [linked-form-20260113](review/linked-form-20260113.md) | Completed | Linked bullet\n",
+        encoding="utf-8",
+    )
+    v = run_script(project, "validate_registry.py")
+    assert v.returncode == 1
+    assert v.stdout.count("non-canonical bullet entry") == 2
+
+
+def test_validate_ignores_fenced_examples(project: Path):
+    """The registry documents its own row format in a fenced block.
+
+    That example must not be validated as a real entry, or every registry
+    seeded from the template starts out failing.
+    """
+    v = run_script(project, "validate_registry.py")
+    assert v.returncode == 0, v.stdout
+    assert "category/name.md" not in v.stdout
+
+
 def test_validate_flags_bad_date_and_status(project: Path):
     reg = project / ".claude/reports/_registry.md"
     lines = reg.read_text(encoding="utf-8").splitlines(keepends=True)

@@ -6,33 +6,42 @@ Load this file when creating reports or handoffs.
 
 ## Category Quick Reference
 
+Filenames follow `[category]-[topic]-[scope]-YYYY-MM-DD.md` — see *Report
+Naming* in `SKILL.md` for the scope slug rules.
+
 | Category | Use For | Example Filename |
 |----------|---------|------------------|
-| `analysis/` | Research, EDA, data exploration | `analysis-user-behavior-2025-12-16.md` |
-| `arch/` | Architecture decisions, ADRs, system design | `arch-api-redesign-2025-12-16.md` |
-| `bugs/` | Bug reports, root cause analysis | `bugs-login-failure-2025-12-16.md` |
-| `commits/` | Commit summaries, changelog entries | `commits-release-v2-2025-12-16.md` |
-| `design/` | UI/UX reviews, design specs | `design-dashboard-review-2025-12-16.md` |
-| `exec/` | Execution logs, command outputs | `exec-migration-2025-12-16.md` |
-| `handoff/` | Agent coordination, context transfers | `handoff-arch-to-backend-2025-12-16.md` |
-| `implementation/` | Implementation plans, code specs | `implementation-auth-module-2025-12-16.md` |
-| `review/` | Code reviews, PR reviews | `review-pr-123-2025-12-16.md` |
-| `tests/` | Test plans, test results, coverage | `tests-auth-coverage-2025-12-16.md` |
-| `security/` | Security scans, threat models, compliance | `security-scan-api-2025-12-16.md` |
-| `sre/` | SLOs, postmortems, capacity plans | `sre-postmortem-outage-2025-12-16.md` |
-| `rfc/` | Design proposals, RFCs | `RFC-0001-auth-system.md` |
-| `ci/` | CI pipeline results | `ci-main-2025-12-16-1430.md` |
+| `analysis/` | Research, EDA, data exploration | `analysis-user-behavior-all-2025-12-16.md` |
+| `architecture/` | Architecture decisions, ADRs, system design | `architecture-api-redesign-src-api-2025-12-16.md` |
+| `bugs/` | Bug reports, root cause analysis | `bugs-login-failure-src-auth-2025-12-16.md` |
+| `ci/` | CI pipeline results | `ci-pipeline-main-all-2025-12-16.md` |
+| `commits/` | Commit summaries, changelog entries | `commits-release-v2-all-2025-12-16.md` |
+| `design/` | UI/UX reviews, design specs | `design-dashboard-review-src-ui-2025-12-16.md` |
+| `docs/` | Documentation audits, coverage and accuracy reviews | `docs-readme-accuracy-all-2025-12-16.md` |
+| `exec/` | Execution logs, command outputs | `exec-migration-all-2025-12-16.md` |
+| `handoffs/` | Agent coordination, context transfers | `handoffs-architecture-to-backend-src-2025-12-16.md` |
+| `implementation/` | Implementation plans, code specs | `implementation-auth-module-src-auth-2025-12-16.md` |
+| `review/` | Code reviews, PR reviews | `review-pr-123-src-2025-12-16.md` |
+| `rfc/` | Design proposals, RFCs | `rfc-0001-auth-system-all-2025-12-16.md` |
+| `security/` | Security scans, threat models, compliance | `security-scan-src-api-2025-12-16.md` |
+| `sre/` | SLOs, postmortems, capacity plans | `sre-postmortem-outage-all-2025-12-16.md` |
+| `tests/` | Test plans, test results, coverage | `tests-auth-coverage-src-auth-2025-12-16.md` |
 
 ---
 
 ## Report Template
+
+The header block is what `add_report.py --scaffold` writes, so a scaffolded
+report starts compliant. Commands that produce reports by hand should reproduce
+it. Status values are the canonical set defined in `SKILL.md` — `Draft` is not
+one of them; an in-progress report is `Active`.
 
 ```markdown
 # [Category]: [Topic]
 
 **Agent:** [Agent Name]
 **Date:** YYYY-MM-DD
-**Status:** Draft | Active | Completed | Superseded
+**Status:** Active | Completed | Superseded | Archived
 
 ---
 
@@ -106,13 +115,21 @@ Use for agent-to-agent coordination:
 
 ## Registry Entry Format
 
+Defined in `SKILL.md` § *Registry Entry Format* — that section governs; this is
+a pointer, not a second definition. One table row per report, under its category
+heading in `## All Reports by Category`:
+
 ```markdown
-### YYYY-MM-DD
-- report-name | Status | Summary in one line
-- another-report | Status | Another summary
+| [name.md](category/name.md) | YYYY-MM-DD | Status | Summary in one line |
 ```
 
-**Status values:** Active | Completed | Superseded
+Write it with the helper rather than by hand:
+
+```bash
+uv run --script .claude/skills/agent-coordination/scripts/add_report.py \
+    --category review --name review-quality-src \
+    --status Completed --summary "Peer review of src/" --scaffold
+```
 
 ---
 
@@ -138,7 +155,7 @@ Task(agent-name, "
 - path/to/file2
 
 **Expected output:**
-- Report: .claude/reports/[cat]/[name]-YYYY-MM-DD.md
+- Report: .claude/reports/[category]/[category]-[topic]-[scope]-YYYY-MM-DD.md
 - Code: [path if applicable]
 - Success: [How to verify]
 
@@ -170,7 +187,7 @@ Add OpenSpec reference to report header when applicable:
 | Report Category | OpenSpec Relationship |
 |-----------------|----------------------|
 | `rfc/` | May become OpenSpec proposal if proposing changes |
-| `arch/` | Can feed into OpenSpec `design.md` files |
+| `architecture/` | Can feed into OpenSpec `design.md` files |
 | `review/` | Evidence for OpenSpec pre-archive quality checks |
 | `security/` | May trigger OpenSpec security-related proposals |
 | `tests/` | Verification for OpenSpec implementation |

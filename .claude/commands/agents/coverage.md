@@ -33,7 +33,7 @@ Analyze test coverage and identify gaps using the test-engineer agent.
    - [Reference any relevant recent reports from registry]
    
    **Output:**
-   - Report: .claude/reports/tests/coverage-analysis-YYYY-MM-DD.md
+   - Report: .claude/reports/tests/tests-coverage-[scope]-YYYY-MM-DD.md
    ")
    ```
 4. Verify report was created using `verify.py`.

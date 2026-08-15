@@ -10,8 +10,21 @@ def test_bootstrap_seeds_registries(project: Path):
     assert (project / ".claude/reports/_registry.md").exists()
     assert (project / ".claude/reports/_tech-debt.md").exists()
     # Category dirs created.
-    for cat in ("review", "security", "sre", "archive"):
+    for cat in ("review", "security", "sre", "docs", "architecture", "handoffs", "archive"):
         assert (project / ".claude/reports" / cat).is_dir()
+
+
+def test_bootstrap_dates_only_the_last_updated_line(project: Path):
+    """Seeding must not date-substitute the template's format examples.
+
+    A blanket YYYY-MM-DD replacement also rewrote the documented row format and
+    archive filename, turning documentation into a stale literal date.
+    """
+    text = (project / ".claude/reports/_registry.md").read_text(encoding="utf-8")
+    assert "**Last Updated:** YYYY-MM-DD" not in text
+    # The documented examples keep their placeholders.
+    assert "| [name.md](category/name.md) | YYYY-MM-DD | Status |" in text
+    assert "_registry-archive-YYYY-MM-DD.md" in text
 
 
 def test_bootstrap_is_non_destructive(project: Path):

@@ -49,9 +49,9 @@ cat .claude/project.md 2>/dev/null | head -60
 # Check registry for recent reports
 cat .claude/reports/_registry.md | head -50
 
-# Check if archiving needed (>50 entries)
-# Report rows are markdown-link table rows, e.g. "| [name](cat/name) | date | ... |"
-ENTRIES=$(grep -c "^| \[" .claude/reports/_registry.md 2>/dev/null || echo 0)
+# Check if archiving needed (>50 entries).
+# Anchored on the ISO date so the registry's own format example is not counted.
+ENTRIES=$(grep -cE '^\| \[.*\]\(.*\) \| [0-9]{4}-[0-9]{2}-[0-9]{2} \|' .claude/reports/_registry.md 2>/dev/null || echo 0)
 [ "$ENTRIES" -gt 50 ] && echo "⚠️ Registry has $ENTRIES entries - suggest /archive"
 
 # Check relevant tech debt (if working on that area)
@@ -77,7 +77,7 @@ Requirements:
 - [Specific deliverables]
 
 Output location:
-- Report: .claude/reports/[category]/[name]-YYYY-MM-DD.md
+- Report: .claude/reports/[category]/[category]-[topic]-[scope]-YYYY-MM-DD.md
 ")
 ```
 
@@ -98,9 +98,21 @@ uv run --script .claude/skills/agent-coordination/scripts/verify.py "[category]"
 
 **Then update registries:**
 
-1. **Always:** Add report to `_registry.md`
+1. **Always:** Add report to `_registry.md`. Prefer the helper over hand-editing
+   — it writes the row in the one format the archive and validation scripts
+   parse, under the right category heading:
+   ```bash
+   uv run --script .claude/skills/agent-coordination/scripts/add_report.py \
+       --category [category] --name [name-without-date] \
+       --status Completed --summary "[1-line summary]"
    ```
-   - [report-name] | [Status] | [1-line summary]
+   The row it produces (see *Registry Entry Format* below):
+   ```
+   | [name.md](category/name.md) | YYYY-MM-DD | Status | 1-line summary |
+   ```
+   Then lint the result:
+   ```bash
+   uv run --script .claude/skills/agent-coordination/scripts/validate_registry.py
    ```
 
 2. **If issues deferred:** Add to `_tech-debt.md`
@@ -128,7 +140,7 @@ Requirements:
 - [Specific deliverables]
 
 Output location:
-- Report: .claude/reports/[category]/[name]-YYYY-MM-DD.md
+- Report: .claude/reports/[category]/[category]-[topic]-[scope]-YYYY-MM-DD.md
 ")
 ```
 
@@ -162,6 +174,7 @@ All reports go to `.claude/reports/[category]/`:
 | bugs | `bugs/` | Bug reports, root cause analysis | code-quality (debug) |
 | commits | `commits/` | Commit summaries, changelog entries | devops (git) |
 | design | `design/` | UI/UX reviews, design specs | ux-designer |
+| docs | `docs/` | Documentation audits, coverage and accuracy reviews | docs |
 | exec | `exec/` | Execution logs, command outputs | devops |
 | handoffs | `handoffs/` | Agent coordination, context transfers | (main agent) |
 | implementation | `implementation/` | Implementation plans, code specs | backend, frontend |
@@ -211,6 +224,48 @@ is what makes `/review-full --quick` and `/agents:review` interchangeable.
 
 ---
 
+## Registry Entry Format
+
+**This section is the single source of truth.** `templates.md`, the registry
+legend, `add_report.py`, `validate_registry.py`, and `archive_reports.py` all
+follow it; nothing else restates it.
+
+Every report is listed **exactly once**, as a table row under its category
+heading in the `## All Reports by Category` section of `_registry.md`:
+
+```
+| [name.md](category/name.md) | YYYY-MM-DD | Status | One-line summary |
+```
+
+Rules that the tooling enforces:
+
+| Rule | Why |
+|------|-----|
+| Link text equals the target's filename | Lets a row be checked against disk |
+| Target is `category/filename.md`, always POSIX slashes | The category segment is what `/archive` uses to place the file |
+| Date is ISO `YYYY-MM-DD` | Same format as the filename suffix and `verify.py` |
+| Listed once, in the by-category section only | A second listing is a duplicate row, which `validate_registry.py` rejects |
+
+There is **no separate "recent" section** — recency is the Date column. A
+bullet-style entry (`- name | Status | Summary`) is the pre-5.3 format; no
+script can parse it, and `validate_registry.py` now reports it as an error
+rather than skipping it.
+
+### Status Values
+
+The canonical set. `validate_registry.py` rejects anything else:
+
+| Status | Meaning |
+|--------|---------|
+| **Active** | Current, in use |
+| **Completed** | Done, no changes expected |
+| **Superseded** | Replaced by a newer report |
+| **Archived** | Historical reference only — set by `/archive`, not by hand |
+
+`Draft` is **not** a valid status. An in-progress report is `Active`.
+
+---
+
 ## Finding Severity
 
 One vocabulary for every review-type report, so findings from different
@@ -241,7 +296,7 @@ NIT → `Low`.
 | data-engineer | collect, analyze, preprocess | analysis/ |
 | data-viz-specialist | - | analysis/, design/ |
 | devops | infra, git | exec/, commits/, ci/ |
-| docs | general, webdev | (documentation files) |
+| docs | general, webdev | docs/ (plus the documentation files themselves) |
 | frontend | - | implementation/ |
 | backend | - | implementation/ |
 | ml-engineer | train, evaluate, deploy | analysis/, implementation/ |
@@ -314,7 +369,7 @@ When agent work relates to an existing OpenSpec change:
 | Report Category | OpenSpec Relationship |
 |-----------------|----------------------|
 | `rfc/` | May become OpenSpec proposal if proposing changes |
-| `arch/` | Can feed into OpenSpec `design.md` files |
+| `architecture/` | Can feed into OpenSpec `design.md` files |
 | `review/` | Evidence for OpenSpec pre-archive quality checks |
 | `security/` | May trigger OpenSpec security-related proposals |
 | `tests/` | Verification for OpenSpec implementation |
@@ -359,14 +414,25 @@ Task(test-engineer, "Verify test coverage for [affected functionality]")
 
 ```
 skills/agent-coordination/
-├── SKILL.md              # This file
-├── templates.md          # Report templates
-├── reference.md          # Verification details, retry logic
+├── SKILL.md                    # This file — protocol, categories, naming, entry format
+├── templates.md                # Report/handoff templates, task prompts
+├── reference.md                # Verification details, retry logic, edge cases
 └── scripts/
-    ├── verify.py         # Deliverable verification
-    └── archive_reports.py # Registry archiving (dated snapshots)
+    ├── bootstrap.py            # Seed registries + category dirs (idempotent)
+    ├── adapt.py                # Generate .claude/project.md for this project
+    ├── add_report.py           # Append a canonical registry row (+ --scaffold)
+    ├── validate_registry.py    # Lint registry rows, dates, links, missing files
+    ├── validate_frontmatter.py # Lint agent/command YAML frontmatter
+    ├── verify.py               # Deliverable verification
+    └── archive_reports.py      # Registry archiving (dated, same-day merge)
 ```
 
 ---
 
-**Version:** 5.2.0
+**Version:** 5.3.0
+
+**5.3.0** — Registry entry format consolidated into one canonical table row
+shared by `add_report.py`, `validate_registry.py`, and `archive_reports.py`;
+bullet entries are now a validation error rather than a silent no-op. Archive
+runs merge within a day instead of truncating. Added the `docs/` category.
+Categories settled on `architecture/` and `handoffs/`.

@@ -22,9 +22,14 @@ uv run --script .claude/skills/agent-coordination/scripts/archive_reports.py 7 -
 ```
 
 **How it works:**
-1. Parses active registry entries (by date in registry, not filename)
+1. Parses active registry rows (by the row's Date column, not the filename).
+   Rows must be canonical — see `SKILL.md` § *Registry Entry Format*. If the
+   registry holds entry-like lines but none parse, the script exits non-zero
+   with a diagnosis instead of reporting "0 archived, 0 remaining".
 2. Moves files older than threshold to `.claude/reports/archive/[category]/`
-3. Creates dated archive registry: `_registry-archive-YYYY-MM-DD.md`
+3. Writes the dated archive registry `_registry-archive-YYYY-MM-DD.md`,
+   **merging** with that day's registry if one exists (a second run on the same
+   day never discards the first run's batch)
 4. Updates active registry (removes archived entries)
 5. Changes status to "Archived" in archive registry
 
@@ -47,11 +52,13 @@ uv run --script .claude/skills/agent-coordination/scripts/archive_reports.py 7 -
 ```bash
 # Script location: .claude/skills/agent-coordination/scripts/verify.py
 
-# Basic verification
-uv run --script .claude/skills/agent-coordination/scripts/verify.py "review" "code-security-audit" "2025-12-13" ""
+# Basic verification.
+# `name` is the filename stem WITHOUT the date; `date` is ISO YYYY-MM-DD.
+# Together they must form the real filename: {name}-{date}.md
+uv run --script .claude/skills/agent-coordination/scripts/verify.py "review" "review-security-audit-src" "2025-12-13"
 
 # With git path check
-uv run --script .claude/skills/agent-coordination/scripts/verify.py "impl" "auth-module" "2025-12-13" "lib/auth/"
+uv run --script .claude/skills/agent-coordination/scripts/verify.py "implementation" "implementation-auth-module-lib-auth" "2025-12-13" "lib/auth/"
 ```
 
 ### Registry Helpers
@@ -64,8 +71,10 @@ SC=.claude/skills/agent-coordination/scripts
 
 # Append an entry (and scaffold the report file) in the canonical row format.
 # --name is the stem WITHOUT the date; the date is appended automatically.
-uv run --script $SC/add_report.py --category review --name review-src \
-    --status Completed --summary "Peer review of src/" --scaffold
+# --agent stamps the report header block (templates.md § Report Template).
+uv run --script $SC/add_report.py --category review --name review-quality-src \
+    --status Completed --summary "Peer review of src/" \
+    --agent code-quality --scaffold
 
 # Lint the registry: bad rows, dates, link/target mismatch, missing files
 uv run --script $SC/validate_registry.py            # exit 1 on errors
@@ -162,7 +171,7 @@ Task(test-engineer, "Run test coverage")
 ```
 # Architect output feeds frontend
 Task(architect, "Mode: system. Design dashboard API contract")
-# VERIFY: .claude/reports/arch/arch-dashboard-api-*.md exists
+# VERIFY: .claude/reports/architecture/architecture-dashboard-api-*.md exists
 Task(frontend, "Implement dashboard using API contract from arch report")
 # VERIFY: src/components/Dashboard/* exists
 Task(test-engineer, "Test dashboard components")
@@ -217,8 +226,12 @@ Task(test-engineer, "Test dashboard components")
 - Check agent has Write in allowed-tools
 
 ### Registry Conflict
-- If same-named report exists, append `-v2` or timestamp
-- Update both entries in registry (mark old as Superseded)
+- **Same category, topic, scope and day → same file, intentionally.** A re-run
+  replaces the earlier report rather than accumulating near-copies; the existing
+  registry row still applies, so do not add a second one.
+- **Genuinely different work colliding** means the scope slug is too coarse —
+  narrow it (`src` → `src-api`) rather than appending `-v2`.
+- **Superseded by later work:** keep both rows, set the older to `Superseded`.
 
 ### Context Too Large
 - Summarize reports instead of including full text

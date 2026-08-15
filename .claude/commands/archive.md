@@ -14,12 +14,15 @@ REGISTRY="$REPORTS_DIR/_registry.md"
 
 ## Process
 
-1. **Parse active registry** for entries older than threshold (default: 7 days)
+1. **Parse active registry** for entries older than threshold (default: 7 days).
+   Rows must be in the canonical format (see `SKILL.md` § *Registry Entry
+   Format*); the script refuses to run if it can parse none of them.
 2. **Move report files** to `.claude/reports/archive/[category]/`
-3. **Create dated archive registry** `.claude/reports/archive/_registry-archive-YYYY-MM-DD.md`
+3. **Write the dated archive registry** `.claude/reports/archive/_registry-archive-YYYY-MM-DD.md`,
+   merging with that day's registry if one already exists
 4. **Update active registry** (remove archived entries)
 5. **Set status** of archived entries to "Archived" in dated registry
-6. **Report summary** with archive date and file count
+6. **Report summary** with archive date, entry-line counts, and file count
 
 ## Arguments
 
@@ -32,19 +35,26 @@ REGISTRY="$REPORTS_DIR/_registry.md"
 
 ```
 .claude/reports/archive/
-├── _registry-archive-YYYY-MM-DD.md  # Dated archive registries (snapshots)
-├── README.md                      # Archive index and documentation
-├── analysis/                      # Old analysis reports
-├── arch/                          # Old architecture reports
-├── bugs/                          # Old bug reports
-├── design/                        # Old design reports
-├── implementation/                # Old implementation reports
-├── exec/                          # Old execution reports
-├── handoff/                       # Old handoff reports
-├── review/                        # Old review reports
-├── security/                      # Old security reports
-└── tests/                         # Old test reports
+├── _registry-archive-YYYY-MM-DD.md  # Dated archive registry (one per archive day)
+├── analysis/                        # Old analysis reports
+├── architecture/                    # Old architecture reports
+├── bugs/                            # Old bug reports
+├── ci/                              # Old CI reports
+├── commits/                         # Old commit reports
+├── design/                          # Old design reports
+├── docs/                            # Old documentation reports
+├── exec/                            # Old execution reports
+├── handoffs/                        # Old handoff reports
+├── implementation/                  # Old implementation reports
+├── review/                          # Old review reports
+├── rfc/                             # Old RFCs
+├── security/                        # Old security reports
+├── sre/                             # Old SRE reports
+└── tests/                           # Old test reports
 ```
+
+Category subdirectories are created on demand — only categories that actually
+have archived reports appear.
 
 ## Execution
 
@@ -68,8 +78,10 @@ uv run --script .claude/skills/agent-coordination/scripts/archive_reports.py 7 -
 
 ## Notes
 
-- **Dated snapshots:** Each archive run creates a new `_registry-archive-YYYY-MM-DD.md`
-- **No appending:** Archive registries are never appended to - each is a snapshot in time
+- **Dated registries:** Each archive *day* has one `_registry-archive-YYYY-MM-DD.md`
+- **Same-day runs merge:** A second run on the same day merges into that day's
+  registry rather than replacing it, so an earlier batch is never orphaned
+  (its files would otherwise sit in `archive/` with no row in any registry)
 - **Full automation:** Updates both active and archive registries automatically
 - **Archived reports** remain accessible in archive folder by category
 - **Reversible:** Can be reversed by moving entries back
