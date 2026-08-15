@@ -1,6 +1,6 @@
 [project]
 name = "ai-coding"
-version = "0.2.2"
+version = "0.3.0"
 description = ""
 readme = "README.md"
 requires-python = ">=3.13"
@@ -27,3 +27,6 @@ name = "cz_conventional_commits"
 version_provider = "pep621"
 tag_format = "v$version"
 update_changelog_on_bump = true
+# .claude/VERSION is the core version install.py stamps into consumer projects,
+# so it must move with the release or every install misreports what it shipped.
+version_files = [".claude/VERSION"]
