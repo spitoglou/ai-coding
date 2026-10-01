@@ -9,11 +9,13 @@ Run a comprehensive local CI pipeline to verify code quality before commits or O
 **Project Detection**
 First read `.claude/project.md` — if it defines Test/Lint/Type-check/Build
 commands (auto-detected block or *Toolchain overrides*), use those verbatim.
+A row reading `(configure in Toolchain overrides)` means nothing was detected:
+skip that step and say so in the summary rather than guessing a tool.
 Fall back to detecting project type and running the defaults below:
 
 | Config File | Project Type | Lint | Type Check | Test |
 |-------------|--------------|------|------------|------|
-| `pyproject.toml` | Python | `ruff check .` | `mypy .` | `pytest` |
+| `pyproject.toml` | Python | `ruff check .` | the checker `pyproject.toml` declares (basedpyright, pyright or mypy); skip if none | `pytest` |
 | `package.json` | Node.js | `npm run lint` | `npm run typecheck` | `npm test` |
 | `Cargo.toml` | Rust | `cargo clippy` | (built-in) | `cargo test` |
 | `go.mod` | Go | `golangci-lint run` | (built-in) | `go test ./...` |
@@ -28,6 +30,7 @@ Fall back to detecting project type and running the defaults below:
    uv run ruff check .
    
    echo "=== Step 2/4: Type Checking ==="
+   # Use the project.md Type check row; this is only the fallback for mypy projects.
    uv run mypy . --ignore-missing-imports
    
    echo "=== Step 3/4: Running Tests ==="

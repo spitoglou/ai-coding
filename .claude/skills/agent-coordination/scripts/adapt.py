@@ -21,6 +21,7 @@ Usage: run from the project root
 
 import re
 import sys
+import tomllib
 from datetime import date as date_cls
 from pathlib import Path
 
@@ -30,6 +31,54 @@ END = "<!-- CORE:AUTODETECT:END -->"
 UNKNOWN_CMD = "(configure in Toolchain overrides)"
 
 DATE_RE = re.compile(r"_Auto-detected (\d{4}-\d{2}-\d{2})\.")
+
+
+# Recognised Python type checkers, in precedence order when more than one is
+# declared. basedpyright is a pyright fork that also reads [tool.pyright], so it
+# ranks first; mypy is no longer assumed when nothing is declared.
+PY_TYPECHECKERS = {
+    "basedpyright": "uv run basedpyright",
+    "pyright": "uv run pyright",
+    "mypy": "uv run mypy .",
+}
+
+
+def _dep_name(spec) -> str | None:
+    """Normalised distribution name from a PEP 508 string, or None."""
+    if not isinstance(spec, str):  # e.g. {include-group = "..."} in dependency-groups
+        return None
+    m = re.match(r"\s*([A-Za-z0-9][A-Za-z0-9._-]*)", spec)
+    return re.sub(r"[-_.]+", "-", m.group(1)).lower() if m else None
+
+
+def python_typecheck(pyproject: Path) -> str:
+    """Type-check command for the checker pyproject.toml declares, else UNKNOWN_CMD.
+
+    A checker listed as a development dependency outranks one that only has a
+    [tool.<checker>] section; within each, PY_TYPECHECKERS order decides.
+    """
+    try:
+        data = tomllib.loads(pyproject.read_text(encoding="utf-8"))
+    except (OSError, tomllib.TOMLDecodeError):
+        return UNKNOWN_CMD
+
+    tool = data.get("tool", {})
+    poetry = tool.get("poetry", {})
+    specs: list = list(tool.get("uv", {}).get("dev-dependencies", []))
+    for group in data.get("dependency-groups", {}).values():
+        specs.extend(group)
+    for extra in data.get("project", {}).get("optional-dependencies", {}).values():
+        specs.extend(extra)
+    names = {_dep_name(s) for s in specs}
+    names |= {_dep_name(k) for k in poetry.get("dev-dependencies", {})}
+    for group in poetry.get("group", {}).values():
+        names |= {_dep_name(k) for k in group.get("dependencies", {})}
+
+    for evidence in (names, set(tool)):
+        for checker, command in PY_TYPECHECKERS.items():
+            if checker in evidence:
+                return command
+    return UNKNOWN_CMD
 
 
 def detect_toolchain(root: Path) -> dict:
@@ -45,7 +94,8 @@ def detect_toolchain(root: Path) -> dict:
 
     if (root / "pyproject.toml").exists():
         info = dict(type="Python", pm="uv", test="uv run pytest",
-                    lint="uv run ruff check .", typecheck="uv run mypy .", build="uv build")
+                    lint="uv run ruff check .", typecheck=python_typecheck(root / "pyproject.toml"),
+                    build="uv build")
         info["name"] = field(root / "pyproject.toml", r'^name = "(.*)"') or name
     elif (root / "package.json").exists():
         info = dict(type="Node.js", pm="npm", test="npm test",

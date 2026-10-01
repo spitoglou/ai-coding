@@ -163,3 +163,59 @@ def test_adapt_keeps_crlf_newlines(tmp_path: Path):
     data = (project / ".claude/project.md").read_bytes()
     assert b"**Type:** Python" in data
     assert data.count(b"\n") == data.count(b"\r\n")      # no bare LF introduced
+
+
+# --- Python type checker detection (REQ-AIC-001) -------------------------------
+
+def typecheck_row(project: Path) -> str:
+    return next(line for line in profile(project).splitlines() if line.startswith("| Type check |"))
+
+
+def adapt_pyproject(tmp_path: Path, body: str) -> str:
+    project = make_project(tmp_path)
+    (project / "pyproject.toml").write_text('[project]\nname = "demo-app"\n' + body, encoding="utf-8")
+    r = run_adapt(project)
+    assert r.returncode == 0, r.stderr
+    return typecheck_row(project)
+
+
+def test_typecheck_basedpyright_in_dependency_groups(tmp_path: Path):
+    row = adapt_pyproject(tmp_path, '[dependency-groups]\ndev = ["basedpyright>=1.22.0", "pytest"]\n')
+    assert "`uv run basedpyright`" in row
+
+
+def test_typecheck_pyright_in_optional_dependencies(tmp_path: Path):
+    row = adapt_pyproject(tmp_path, '[project.optional-dependencies]\ndev = ["Pyright[nodejs]==1.1"]\n')
+    assert "`uv run pyright`" in row
+
+
+def test_typecheck_mypy_in_uv_dev_dependencies(tmp_path: Path):
+    row = adapt_pyproject(tmp_path, '[tool.uv]\ndev-dependencies = ["mypy>=1.0", "types-requests"]\n')
+    assert "`uv run mypy .`" in row
+
+
+def test_typecheck_mypy_in_poetry_group(tmp_path: Path):
+    row = adapt_pyproject(tmp_path, '[tool.poetry.group.dev.dependencies]\nmypy = "^1.0"\n')
+    assert "`uv run mypy .`" in row
+
+
+def test_typecheck_from_tool_section_only(tmp_path: Path):
+    row = adapt_pyproject(tmp_path, '[tool.mypy]\nstrict = true\n')
+    assert "`uv run mypy .`" in row
+
+
+def test_typecheck_none_is_neutral(tmp_path: Path):
+    row = adapt_pyproject(tmp_path, '[dependency-groups]\ndev = ["pytest", "types-requests"]\n')
+    assert "configure in Toolchain overrides" in row
+    assert "mypy" not in row
+
+
+def test_typecheck_more_than_one_uses_precedence(tmp_path: Path):
+    row = adapt_pyproject(tmp_path, '[dependency-groups]\ndev = ["mypy", "basedpyright"]\n')
+    assert "`uv run basedpyright`" in row
+
+
+def test_typecheck_dependency_outranks_tool_section(tmp_path: Path):
+    # basedpyright reads [tool.pyright] too, so that section must not win.
+    row = adapt_pyproject(tmp_path, '[dependency-groups]\ndev = ["basedpyright"]\n\n[tool.pyright]\nstrict = ["src"]\n')
+    assert "`uv run basedpyright`" in row

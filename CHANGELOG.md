@@ -10,6 +10,15 @@
   never on its own. Writes keep the file's existing line endings instead of
   converting it to CRLF on Windows, and seeding from `project-template.md`
   copies the template byte-for-byte.
+- `adapt.py` no longer assumes mypy for every Python project. It reads
+  `pyproject.toml` and names the type checker declared there: basedpyright,
+  pyright or mypy, found in `[dependency-groups]`, `[tool.uv] dev-dependencies`,
+  `[project.optional-dependencies]`, Poetry dev groups or a `[tool.<checker>]`
+  section. A declared dependency outranks a bare config section, and with more
+  than one the order is basedpyright, pyright, mypy. With none, the Type check
+  row reads `(configure in Toolchain overrides)`, and `/agents:ci` skips that
+  step instead of running mypy. Python targets whose row changes get one
+  AUTODETECT rewrite on their next session start.
 
 ## v0.3.0 (2026-08-15)
 
