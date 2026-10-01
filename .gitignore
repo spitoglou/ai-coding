@@ -8,7 +8,8 @@ __pycache__/
 .pytest_cache/
 .venv/
 .claude/reports/*
-openspec
-AGENTS.md
+# openspec/ is tracked: spec changes are versioned and reviewed with the code.
+# Only the root AGENTS.md stub stays ignored; openspec/AGENTS.md is tracked.
+/AGENTS.md
 !.claude/reports/_registry-template.md
 !.claude/reports/_tech-debt-template.md
