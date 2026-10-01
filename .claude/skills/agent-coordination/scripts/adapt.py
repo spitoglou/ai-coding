@@ -10,8 +10,10 @@ template if missing, then regenerates ONLY the <!-- CORE:AUTODETECT --> block
 with the project's detected toolchain. Everything outside that block (your
 "Project-specific notes") is preserved.
 
-Idempotent and rerunnable. The richer, judgement-based adaptation is done by the
-`/adapt` command.
+Idempotent and rerunnable: project.md is written only when a detected value
+changes, in the file's own newline style, so a session start on an unchanged
+project leaves it untouched. The richer, judgement-based adaptation is done by
+the `/adapt` command.
 
 Usage: run from the project root
     uv run --script adapt.py
@@ -26,6 +28,8 @@ START = "<!-- CORE:AUTODETECT:START -->"
 END = "<!-- CORE:AUTODETECT:END -->"
 
 UNKNOWN_CMD = "(configure in Toolchain overrides)"
+
+DATE_RE = re.compile(r"_Auto-detected (\d{4}-\d{2}-\d{2})\.")
 
 
 def detect_toolchain(root: Path) -> dict:
@@ -78,11 +82,17 @@ def build_block(info: dict, today: str) -> str:
     )
 
 
-def splice_block(text: str, block: str) -> str:
+def current_block(text: str) -> str:
+    """Return the content between START/END markers, newlines normalised to LF."""
+    start_i = text.index(START) + len(START)
+    return text[start_i:text.index(END)].replace("\r\n", "\n")
+
+
+def splice_block(text: str, block: str, newline: str = "\n") -> str:
     """Replace the content between START/END markers with `block`."""
     start_i = text.index(START) + len(START)
     end_i = text.index(END)
-    return text[:start_i] + "\n" + block + text[end_i:]
+    return text[:start_i] + ("\n" + block).replace("\n", newline) + text[end_i:]
 
 
 def main() -> int:
@@ -98,18 +108,29 @@ def main() -> int:
         if not template.exists():
             print(f"❌ Template missing: {template}", file=sys.stderr)
             return 1
-        project_md.write_text(template.read_text(encoding="utf-8"), encoding="utf-8")
+        project_md.write_bytes(template.read_bytes())  # keep the template's newlines
         print(f"✅ Created {project_md} from template")
 
-    text = project_md.read_text(encoding="utf-8")
+    text = project_md.read_text(encoding="utf-8", newline="")  # no newline translation
     if START not in text or END not in text:
         print(f"❌ {project_md} is missing the CORE:AUTODETECT markers.", file=sys.stderr)
         print(f"   Restore them from {template} (or delete project.md to reseed).", file=sys.stderr)
         return 1
 
     info = detect_toolchain(Path("."))
+
+    # Render with the date already recorded: if that matches, nothing detected
+    # has changed and the date must not move on its own. Writing anyway left
+    # every repository with a one-line diff on each new day.
+    existing = current_block(text)
+    recorded = DATE_RE.search(existing)
+    if recorded and "\n" + build_block(info, recorded.group(1)) == existing:
+        print(f"✅ Adapted core to: {info['name']} ({info['type']}) — AUTODETECT block already current")
+        return 0
+
+    newline = "\r\n" if "\r\n" in text else "\n"
     block = build_block(info, date_cls.today().isoformat())
-    project_md.write_text(splice_block(text, block), encoding="utf-8")
+    project_md.write_text(splice_block(text, block, newline), encoding="utf-8", newline="")
 
     print(f"✅ Adapted core to: {info['name']} ({info['type']}) — refreshed AUTODETECT block in {project_md}")
     return 0

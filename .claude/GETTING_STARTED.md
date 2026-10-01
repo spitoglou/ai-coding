@@ -124,7 +124,9 @@ Two passes keep `.claude/project.md` current:
 1. **Deterministic** — `adapt.py` detects the toolchain (test/lint/type-check/
    build commands, package manager, project name) and (re)writes the managed
    `CORE:AUTODETECT` block. It runs automatically during bootstrap and every
-   session, and is safe to run by hand:
+   session, but writes `project.md` only when a detected value changes, in the
+   file's own line endings, so an unchanged project stays clean in `git status`.
+   It is safe to run by hand:
 
    ```bash
    uv run --script .claude/skills/agent-coordination/scripts/adapt.py

@@ -6,7 +6,7 @@
 >
 > - The block between the `CORE:AUTODETECT` markers is **auto-generated** by
 >   `adapt.py` / `/adapt`. Do not edit it by hand — it is regenerated on every
->   run.
+>   run, and rewritten (with a new date) only when a detected value changes.
 > - Everything under **Project-specific notes** is yours. It is never
 >   regenerated and never overwritten by `install.py`.
 

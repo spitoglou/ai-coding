@@ -1,3 +1,16 @@
+## Unreleased
+
+### Fixed
+
+- `adapt.py` no longer leaves `.claude/project.md` dirty after every session
+  start. It rewrote the `CORE:AUTODETECT` block unconditionally with today's
+  date, so each new day produced a one-line diff that had to be reverted before
+  every commit. It now renders the block with the date already recorded and
+  writes only when a detected value differs; the date moves with the values,
+  never on its own. Writes keep the file's existing line endings instead of
+  converting it to CRLF on Windows, and seeding from `project-template.md`
+  copies the template byte-for-byte.
+
 ## v0.3.0 (2026-08-15)
 
 ### Migration required
